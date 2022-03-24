@@ -6,7 +6,7 @@
 // @grant       none
 // @version     1.1
 // @author      ec50n9
-// @description 2022/3/22 09:54:29
+// @description 去除了135编辑器页面广告、vip样式限制、非会员只能开2个选项卡限制，并增加自制css编辑器，可直接编辑元素css。
 // ==/UserScript==
 
 $(function () {
