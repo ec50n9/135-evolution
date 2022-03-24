@@ -4,7 +4,7 @@
 // @match       https://www.135editor.com/beautify_editor.html
 // @icon        https://www.135editor.com/img/vip/vip.png
 // @grant       none
-// @version     1.1
+// @version     1.2
 // @author      ec50n9
 // @description 去广告、解除vip限制、解除2个选项卡限制，配色方案中增加互补色选项，并增加自制css编辑器，可直接编辑元素css。
 // ==/UserScript==
