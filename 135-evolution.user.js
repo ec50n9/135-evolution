@@ -59,7 +59,7 @@ $(function () {
 
     // 编辑增强
     let ec_window = $(`
-    <div style="display:none;
+    <div style="display:flex;
         flex-direction:column;
         position:fixed;
         top:10em; left:25%;
@@ -107,7 +107,7 @@ $(function () {
         </div>
         <button id="ec-win-parent" style="align-self:flex-end; margin-top:1em; padding:0 .8em; border-radius:.4em; border:2px solid #999;">父容器</button>
         <button id="ec-win-write" style="align-self:flex-end; margin-top:1em; padding:.2em .8em; border-radius:.4em; border:2px solid #eee; color:#fff; background-color:#2775b6">更新写入</button>
-    </div>`);
+    </div>`).hide();
     $('body').append(ec_window);
     // 子控件
     let ec_win_title = $('#ec-win-title');
@@ -248,11 +248,11 @@ $(function () {
 
         // 为元素添加监听器
         if ($(this).attr('class') === 'running') {
-            ec_window.css('display', 'none');
+            ec_window.fadeOut(300);
             $('#ueditor_0').contents().find('body .binding').unbind().removeClass('binding');
             $(this).removeClass('running').find('a').css({'background-color': '#e8b004' }).text('编辑进化');
         } else {
-            ec_window.css('display', 'flex');
+            ec_window.fadeIn(300);
             $('#ueditor_0').contents().find('body *:not(.binding)').bind('click', element_click_func).addClass('binding');
             $(this).addClass('running').find('a').css({'background-color': '#20a162' }).text('解除进化');
         }
