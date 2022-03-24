@@ -23,7 +23,9 @@ $(function () {
         // 文章管理器会员
         articleManager.setVIP(true);
     }, 1000);
+    // 去除会员弹窗
     window.style_click = window.show_role_vip_dialog = function () { };
+    // 伪装登录
     // window.loged_user = 1;
     // 会员弹窗
     $('#add_xiaoshi').hide();
@@ -54,13 +56,14 @@ $(function () {
         complementary_color_div.children('input').attr('value', getComplementaryColor(cur_color));
         complementary_color_div.children('input').css({ 'color': cur_color, 'background-color': getComplementaryColor(cur_color) });
     });
+
     // 编辑增强
     let ec_window = $(`
     <div style="display:none;
         flex-direction:column;
         position:fixed;
-        top:2em; left:2em;
-        max-width:40em;
+        top:10em; left:25%;
+        max-width:30em;
         max-height:70%;
         padding:1em;
         box-sizing: border-box;
@@ -68,7 +71,21 @@ $(function () {
         box-shadow:rgba(149, 157, 165, 0.2) 0px 8px 24px;
         border-radius:1em;
         z-index:999;">
+        <style>
+            #ec-path-list{
+                list-style: none;
+                display: flex;
+                flex-wrap: wrap;
+                text-transform: lowercase;
+            }
+            #ec-path-list li:nth-child(n+2)::before{
+                content: '>';
+                margin: 0 .5em;
+            }
+        </style>
         <h1 id="ec-win-title" style="height:2em; cursor:move;">元素名</h1>
+        <ul id="ec-path-list">
+        </ul>
         <div style="display:flex; flex-direction:column; overflow-y:scroll">
             <h2 style="margin-top:1em; font-weight:600">样式</h2>
             <table id="ec-win-style"></table>
@@ -94,6 +111,7 @@ $(function () {
     $('body').append(ec_window);
     // 子控件
     let ec_win_title = $('#ec-win-title');
+    let ec_path_list = $('#ec-path-list');
     let ec_win_style = $('#ec-win-style');
     let ec_win_input_style = $('#ec-win-input-style');
     let ec_win_add_style = $('#ec-win-add-style');
@@ -134,36 +152,60 @@ $(function () {
         });
     });
     // 绑定事件
-    let reflesh_btn = $('<li style="margin-bottom: 20px;"><a href="javascript:;" class="btn btn-default btn-xs" title="绑定监听器">编辑进化</a></li>').on('click', function () {
+    let reflesh_btn = $('<li style="margin-bottom: 20px;"><a href="javascript:;" class="btn btn-default btn-xs" style="color:#fff; background-color:#e8b004;" title="绑定监听器">编辑进化</a></li>').on('click', function () {
+        // 元素选中
         let element_click_func = function () {
-            // console.log('click: ', this);
-            cur_element = this;
+            cur_element = $(this);
+
+            // 清空内容
+            ec_path_list.html('');
             ec_win_style.html('');
             ec_win_attr.html('');
             ec_win_html.val('');
-            ec_win_title.text(`<${cur_element.tagName}>`);
-            let attrNames = cur_element.getAttributeNames();
-            for (let i in attrNames) {
-                let attrName = attrNames[i];
-                let attrValue = $(cur_element).attr(attrName);
-                if (attrName === 'style') {
-                    let style_list = attrValue.split(';');
-                    for (let j = 0; j < style_list.length; j++) {
-                        let style = style_list[j];
-                        if (style) {
-                            let style_item = style.split(':');
-                            let style_row = $(`<tr><th>${style_item[0]}</th><td><input type="text" value="${style_item[1]}" style="border:2px solid #eee;padding:0 8px; border-radius:2px;"></td></tr>`);
-                            ec_win_style.append(style_row);
+            ec_win_add_style.unbind();
+            ec_win_write.unbind();
+            ec_win_parent.unbind();
+
+            // 添加内容
+            cur_element.each(function () {
+                // 设置标题
+                ec_win_title.text(`当前元素：${this.tagName}`);
+                // 路径
+                cur_element.parents().filter('body *').each(function () {
+                    let row = $(`<li><a href="javascript:;">${this.tagName}</a></li>`);
+                    ec_path_list.prepend(row);
+                    let element = $(this);
+                    row.find('a').bind('click', function () {
+                        element.click();
+                    });
+                });
+                ec_path_list.append(`<li>[ ${this.tagName} ]</li>`);
+                // 遍历属性
+                $.each(this.attributes, function () {
+                    if (this.specified) {
+                        if (this.name === 'style') {
+                            // 单独处理样式
+                            let style_list = this.value.split(';');
+                            for (let j = 0; j < style_list.length; j++) {
+                                let style = style_list[j];
+                                if (style) {
+                                    let style_item = style.split(':');
+                                    let style_row = $(`<tr><th>${style_item[0]}</th><td><input type="text" value="${style_item[1]}" style="border:2px solid #eee;padding:0 8px; border-radius:2px;"></td></tr>`);
+                                    ec_win_style.append(style_row);
+                                }
+                            }
+                        } else {
+                            // 处理其他属性
+                            let row = $(`<tr><th>${this.name}</th><td><input type="text" value="${this.value}" style="border:2px solid #eee;padding:0 8px; border-radius:2px;"></td></tr>`);
+                            ec_win_attr.append(row);
                         }
                     }
-                } else {
-                    let row = $(`<tr><th>${attrName}</th><td><input type="text" value="${attrValue}" style="border:2px solid #eee;padding:0 8px; border-radius:2px;"></td></tr>`);
-                    ec_win_attr.append(row);
-                }
-            }
-            ec_win_html.val($(cur_element).html());
-            // 应用样式
-            let update_sytle = function(element){
+                });
+            });
+            // html内容
+            ec_win_html.val(cur_element.html());
+            // 更新样式函数
+            function update_sytle(element) {
                 // 保存样式
                 let sytle_tr_list = ec_win_style.find('tr');
                 let style_text = '';
@@ -172,50 +214,55 @@ $(function () {
                     if (tr.find('input').val()) {
                         style_text = style_text + tr.find('th').text() + ':' + tr.find('input').val() + ';';
                     }
-                    // $(cur_element).css(tr.find('th').text(), tr.find('input').val());
                 }
                 element.attr('style', style_text);
             }
-            // 添加样式
-            ec_win_add_style.unbind().bind('click', function () {
+            // 添加样式按钮
+            ec_win_add_style.bind('click', function () {
                 let style_text = ec_win_input_style.val();
                 if (style_text) {
                     let temp = style_text.split(':');
                     ec_win_style.append(`<tr><th>${temp[0]}</th><td><input type="text" value="${temp.length > 1 ? temp[1].replace(';', '') : ''}" style="border:2px solid #eee;padding:0 8px; border-radius:2px;"></td></tr>`);
                     ec_win_input_style.val('');
                 }
-                update_sytle($(cur_element));
+                update_sytle(cur_element);
             });
-            // 保存
-            ec_win_write.unbind().bind('click', function () {
-                update_sytle($(cur_element));
+            // 保存按钮
+            ec_win_write.bind('click', function () {
+                update_sytle(cur_element);
                 // 保存属性
                 let tr_list = ec_win_attr.find('tr');
                 for (let i = 0; i < tr_list.length; i++) {
                     let tr = $(tr_list[i]);
-                    $(cur_element).attr(tr.find('th').text(), tr.find('input').val());
+                    cur_element.attr(tr.find('th').text(), tr.find('input').val());
                 }
                 // 保存内容
-                $(cur_element).html(ec_win_html.val());
+                cur_element.html(ec_win_html.val());
             });
             // 父辈按钮
-            ec_win_parent.unbind().bind('click', function () {
-                $(cur_element).parent().click();
+            ec_win_parent.bind('click', function () {
+                cur_element.parent().click();
             });
             return false;
         }
 
+        // 为元素添加监听器
         if ($(this).attr('class') === 'running') {
             ec_window.css('display', 'none');
             $('#ueditor_0').contents().find('body .binding').unbind().removeClass('binding');
-            $(this).removeClass('running');
-            $(this).find('a').removeAttr('style').text('编辑进化');
+            $(this).removeClass('running').find('a').css({'background-color': '#e8b004' }).text('编辑进化');
         } else {
             ec_window.css('display', 'flex');
             $('#ueditor_0').contents().find('body *:not(.binding)').bind('click', element_click_func).addClass('binding');
-            $(this).addClass('running');
-            $(this).find('a').css({ 'color': '#fff', 'background-color': '#20a162' }).text('解除进化');
+            $(this).addClass('running').find('a').css({'background-color': '#20a162' }).text('解除进化');
         }
     });
+    // 进化按钮
     $('#operate-tool').prepend(reflesh_btn);
+    // 色板按钮
+    let open_color_plan = $('<li><a href="javascript:;" class="btn btn-default btn-xs" title="打开色板">开关色板</a></li>')
+        .on('click', function () {
+            $('#color-plan').fadeToggle(300);
+        });
+    $('#operate-tool').prepend(open_color_plan)
 });
