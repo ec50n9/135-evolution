@@ -1,13 +1,14 @@
 // ==UserScript==
-// @name        135编辑器进化🧬
+// @name        微信编辑器进化🧬
 // @namespace   http://tampermonkey.net/
-// @match       *://www.135editor.com/beautify_editor.html
+// @match       *://www.135editor.com/*
 // @match       *://bj.96weixin.com/*
 // @icon        https://www.135editor.com/img/vip/vip.png
 // @grant       none
 // @version     1.3
 // @author      ec50n9
 // @description 去广告、解除vip限制、解除2个选项卡限制，配色方案中增加互补色选项，并增加自制css编辑器，可直接编辑元素css。
+// @license     MIT
 // ==/UserScript==
 
 $(function () {
@@ -50,10 +51,18 @@ $(function () {
         }
     </style>
     <h1 id="ec-win-title" style="height:2em; cursor:move;">元素名</h1>
-    <ul id="ec-path-list">
+    <ul id="ec-path-list" style="margin:0;">
     </ul>
     <div style="display:flex; flex-direction:column; overflow-y:scroll">
-        <h2 style="margin-top:1em; font-weight:600">样式</h2>
+        <h2 style="margin-top:1em; font-weight:600">全局样式</h2>
+        <div style="width:100%">
+            <textarea id="ec-style-inject" rows="6" style="width:100%; border:2px solid #eee; padding:0 8px; border-radius:2px;">样式内容</textarea>
+        </div>
+        <div style="display:flex; justify-content:flex-end; margin-top:.2em">
+            <button id="ec-reflesh-style-inject" style="min-width:5em; padding:0 .8em; border-radius:.4em; border:2px solid #999;">刷新</button>
+            <button id="ec-save-style-inject" style="min-width:5em; margin-left:.5em; padding:0 .8em; border-radius:.4em; border:2px solid #999;">保存</button>
+        </div>
+        <h2 style="margin-top:1em; font-weight:600">当前元素样式</h2>
         <table id="ec-win-style"></table>
         <div style="display:flex; align-items:center; margin-top:.5em">
             <input id="ec-win-input-style" type="text" value=""placeholder="例: color: red;" style="flex-grow:1; border:2px solid #eee;padding:0 8px; border-radius:2px;">
@@ -82,6 +91,9 @@ $(function () {
     let ec_win_input_style = $('#ec-win-input-style');
     let ec_win_add_style = $('#ec-win-add-style');
     let ec_win_attr = $('#ec-win-attr');
+    let ec_style_inject = $('#ec-style-inject');
+    let ec_reflesh_style_inject = $('#ec-reflesh-style-inject');
+    let ec_save_style_inject = $('#ec-save-style-inject');
     let ec_win_html = $('#ec-win-html');
     let ec_win_parent = $('#ec-win-parent');
     let ec_win_write = $('#ec-win-write');
@@ -119,6 +131,25 @@ $(function () {
     });
     // 进化函数
     const evolution = function () {
+        let cur_editor = $('#ueditor_0');
+        // 注入style
+        if(!cur_editor.contents().find('#body-css').length){
+            cur_editor.contents().find('head').append($('<style id="body-css"></style>'))
+        }
+        if (!cur_editor.contents().find('#ec-inject').length) {
+            cur_editor.contents().find('body').prepend($(`<div id="ec-inject" cdata_tag="style" cdata_data="" _ue_custom_node_="true"></div>`))
+        }
+        // 注入头部预览css
+        let inject_head_preview = cur_editor.contents().find('#body-css');
+        let inject_div = cur_editor.contents().find('#ec-inject');
+        ec_reflesh_style_inject.on('click', function(){
+            ec_style_inject.val('').val(inject_div.attr('cdata_data'));
+        }).click();
+        ec_save_style_inject.on('click', function(){
+            inject_div.attr('cdata_data', ec_style_inject.val());
+            inject_head_preview.html('').html(ec_style_inject.val());
+        });
+
         // 元素选中
         let element_click_func = function () {
             const cur_element = $(this);
@@ -215,13 +246,13 @@ $(function () {
         // 为元素添加监听器
         if ($(this).hasClass('running')) {
             ec_window.fadeOut(300);
-            $('#ueditor_0').contents().find('body .binding').unbind().removeClass('binding');
+            cur_editor.contents().find('body .binding').unbind().removeClass('binding');
             $(this).removeClass('running');
 
             ($(this).children().length ? $(this).children() : $(this)).css({ 'background-color': '#e8b004' }).text('编辑进化');
         } else {
             ec_window.fadeIn(300);
-            $('#ueditor_0').contents().find('body *:not(.binding)').bind('click', element_click_func).addClass('binding');
+            cur_editor.contents().find('body *:not(.binding,#ec-inject)').bind('click', element_click_func).addClass('binding');
             $(this).addClass('running');
 
             ($(this).children().length ? $(this).children() : $(this)).css({ 'background-color': '#20a162' }).text('解除进化');
@@ -280,8 +311,8 @@ $(function () {
 
     const run96 = function () {
         // vip样式
-        setInterval(function(){
-            $('.rich_media_content').attr('data-vip',1);
+        setInterval(function () {
+            $('.rich_media_content').attr('data-vip', 1);
         }, 1000);
         // 进化按钮
         let evolution_btn = $('<button type="button" class="layui-btn layui-btn-primary" style="color:#fff; background-color:#e8b004;">编辑进化</button>').on('click', evolution);
