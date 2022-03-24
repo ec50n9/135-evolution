@@ -1,41 +1,20 @@
 // ==UserScript==
 // @name        135编辑器进化🧬
 // @namespace   http://tampermonkey.net/
-// @match       https://www.135editor.com/beautify_editor.html
+// @match       *://www.135editor.com/beautify_editor.html
+// @match       *://bj.96weixin.com/*
 // @icon        https://www.135editor.com/img/vip/vip.png
 // @grant       none
-// @version     1.2
+// @version     1.3
 // @author      ec50n9
 // @description 去广告、解除vip限制、解除2个选项卡限制，配色方案中增加互补色选项，并增加自制css编辑器，可直接编辑元素css。
 // ==/UserScript==
 
 $(function () {
-    // 解除模板会员限制
-    setInterval(() => {
-        let lis = $('#editor-template-scroll li');
-        for (let i = 0, len = lis.length; i < len; i++) {
-            lis[i].classList.remove('vip-style');
-        }
-        // vip删除线
-        $('.vip-flag').css('text-decoration', 'line-through');
-        // 去除小红点
-        $('.user-unread-msgnum').hide();
-        // 文章管理器会员
-        articleManager.setVIP(true);
-    }, 1000);
-    // 去除会员弹窗
-    window.style_click = window.show_role_vip_dialog = function () { };
-    // 伪装登录
-    // window.loged_user = 1;
-    // 会员弹窗
-    $('#add_xiaoshi').hide();
-    // 顶部导航栏后两个按钮
-    $('.category-nav.editor-nav>.nav-item:nth-last-child(-n+2)').hide();
-    // 移除全局菜单中非功能设置按钮
-    $('#fixed-side-bar li:not(#function-settings), #fixed-bar-pack-up').hide();
+    'use strict';
 
-    // 颜色增强
-    const getComplementaryColor = (color = '') => {
+    // 计算互补色
+    const getComplementaryColor = function (color = '') {
         const colorPart = color.slice(1);
         const ind = parseInt(colorPart, 16);
         let iter = ((1 << 4 * colorPart.length) - 1 - ind).toString(16);
@@ -44,72 +23,59 @@ $(function () {
         };
         return '#' + iter;
     };
-    let origin_color_div = $('#color-choosen>div:first-child'); // 原始
-    let complementary_color_div = origin_color_div.clone(); // 互补
-    origin_color_div.before($('<p style="color:#fff;">原始色</p>'));
-    origin_color_div.after(complementary_color_div);
-    origin_color_div.after($('<p style="color:#fff;">互补色</p>'));
-    $('#color-plan-list .color-swatch').on('click', function () {
-        let cur_color = $(this).attr('style').match(/background-color:\s?([^;]+)/)[1];
-        console.log(cur_color, getComplementaryColor(cur_color));
-        origin_color_div.children('input').css('color', getComplementaryColor(cur_color))
-        complementary_color_div.children('input').attr('value', getComplementaryColor(cur_color));
-        complementary_color_div.children('input').css({ 'color': cur_color, 'background-color': getComplementaryColor(cur_color) });
-    });
-
-    // 编辑增强
+    // css编辑面板
     let ec_window = $(`
-    <div style="display:flex;
-        flex-direction:column;
-        position:fixed;
-        top:10em; left:25%;
-        max-width:30em;
-        max-height:70%;
-        padding:1em;
-        box-sizing: border-box;
-        background-color:#fff;
-        box-shadow:rgba(149, 157, 165, 0.2) 0px 8px 24px;
-        border-radius:1em;
-        z-index:999;">
-        <style>
-            #ec-path-list{
-                list-style: none;
-                display: flex;
-                flex-wrap: wrap;
-                text-transform: lowercase;
-            }
-            #ec-path-list li:nth-child(n+2)::before{
-                content: '>';
-                margin: 0 .5em;
-            }
-        </style>
-        <h1 id="ec-win-title" style="height:2em; cursor:move;">元素名</h1>
-        <ul id="ec-path-list">
-        </ul>
-        <div style="display:flex; flex-direction:column; overflow-y:scroll">
-            <h2 style="margin-top:1em; font-weight:600">样式</h2>
-            <table id="ec-win-style"></table>
-            <div style="display:flex; align-items:center; margin-top:.5em">
-                <input id="ec-win-input-style" type="text" value=""placeholder="例: color: red;" style="flex-grow:1; border:2px solid #eee;padding:0 8px; border-radius:2px;">
-                <button id="ec-win-add-style" style="min-width:5em; margin-left:1em; padding:0 .8em; border-radius:.4em; border:2px solid #999;">添加样式</button>
-            </div>
-            <div style="margin-top:.8em; color:#999; font-size:.8em;">
-                每次只能添加<strong>一条</strong>样式。<br>
-                添加样式后需要点击下方<strong>写入</strong>才可生效。<br>
-                清空编辑框后点击<strong>写入</strong>即可删除该行样式。
-            </div>
-            <h2 style="margin-top:1em; font-weight:600">属性</h2>
-            <table id="ec-win-attr"></table>
-            <h2 style="margin-top:1em; font-weight:600">内容</h2>
-            <div style="width:100%">
-                <textarea id="ec-win-html" rows="6" style="width:100%; border:2px solid #eee; padding:0 8px; border-radius:2px;">元素文本</textarea>
-            </div>
+<div style="display:flex;
+    flex-direction:column;
+    position:fixed;
+    top:10em; left:25%;
+    max-width:30em;
+    max-height:70%;
+    padding:1em;
+    box-sizing: border-box;
+    background-color:#fff;
+    box-shadow:rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    border-radius:1em;
+    z-index:999;">
+    <style>
+        #ec-path-list{
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            text-transform: lowercase;
+        }
+        #ec-path-list li:nth-child(n+2)::before{
+            content: '>';
+            margin: 0 .5em;
+        }
+    </style>
+    <h1 id="ec-win-title" style="height:2em; cursor:move;">元素名</h1>
+    <ul id="ec-path-list">
+    </ul>
+    <div style="display:flex; flex-direction:column; overflow-y:scroll">
+        <h2 style="margin-top:1em; font-weight:600">样式</h2>
+        <table id="ec-win-style"></table>
+        <div style="display:flex; align-items:center; margin-top:.5em">
+            <input id="ec-win-input-style" type="text" value=""placeholder="例: color: red;" style="flex-grow:1; border:2px solid #eee;padding:0 8px; border-radius:2px;">
+            <button id="ec-win-add-style" style="min-width:5em; margin-left:1em; padding:0 .8em; border-radius:.4em; border:2px solid #999;">添加样式</button>
         </div>
-        <button id="ec-win-parent" style="align-self:flex-end; margin-top:1em; padding:0 .8em; border-radius:.4em; border:2px solid #999;">父容器</button>
-        <button id="ec-win-write" style="align-self:flex-end; margin-top:1em; padding:.2em .8em; border-radius:.4em; border:2px solid #eee; color:#fff; background-color:#2775b6">更新写入</button>
-    </div>`).hide();
+        <div style="margin-top:.8em; color:#999; font-size:.8em;">
+            每次只能添加<strong>一条</strong>样式。<br>
+            添加样式后需要点击下方<strong>写入</strong>才可生效。<br>
+            清空编辑框后点击<strong>写入</strong>即可删除该行样式。
+        </div>
+        <h2 style="margin-top:1em; font-weight:600">属性</h2>
+        <table id="ec-win-attr"></table>
+        <h2 style="margin-top:1em; font-weight:600">内容</h2>
+        <div style="width:100%">
+            <textarea id="ec-win-html" rows="6" style="width:100%; border:2px solid #eee; padding:0 8px; border-radius:2px;">元素文本</textarea>
+        </div>
+    </div>
+    <button id="ec-win-parent" style="align-self:flex-end; margin-top:1em; padding:0 .8em; border-radius:.4em; border:2px solid #999;">父容器</button>
+    <button id="ec-win-write" style="align-self:flex-end; margin-top:1em; padding:.2em .8em; border-radius:.4em; border:2px solid #eee; color:#fff; background-color:#2775b6">更新写入</button>
+</div>`).hide();
     $('body').append(ec_window);
-    // 子控件
+    // 窗口控件
     let ec_win_title = $('#ec-win-title');
     let ec_path_list = $('#ec-path-list');
     let ec_win_style = $('#ec-win-style');
@@ -151,11 +117,11 @@ $(function () {
             $(document).off('mousemove');
         });
     });
-    // 绑定事件
-    let reflesh_btn = $('<li style="margin-bottom: 20px;"><a href="javascript:;" class="btn btn-default btn-xs" style="color:#fff; background-color:#e8b004;" title="绑定监听器">编辑进化</a></li>').on('click', function () {
+    // 进化函数
+    const evolution = function () {
         // 元素选中
         let element_click_func = function () {
-            cur_element = $(this);
+            const cur_element = $(this);
 
             // 清空内容
             ec_path_list.html('');
@@ -172,7 +138,7 @@ $(function () {
                 ec_win_title.text(`当前元素：${this.tagName}`);
                 // 路径
                 cur_element.parents().filter('body *').each(function () {
-                    let row = $(`<li><a href="javascript:;">${this.tagName}</a></li>`);
+                    let row = $(`<li><a style="color:#ff793f;" href="javascript:;">${this.tagName}</a></li>`);
                     ec_path_list.prepend(row);
                     let element = $(this);
                     row.find('a').bind('click', function () {
@@ -247,22 +213,83 @@ $(function () {
         }
 
         // 为元素添加监听器
-        if ($(this).attr('class') === 'running') {
+        if ($(this).hasClass('running')) {
             ec_window.fadeOut(300);
             $('#ueditor_0').contents().find('body .binding').unbind().removeClass('binding');
-            $(this).removeClass('running').find('a').css({'background-color': '#e8b004' }).text('编辑进化');
+            $(this).removeClass('running');
+
+            ($(this).children().length ? $(this).children() : $(this)).css({ 'background-color': '#e8b004' }).text('编辑进化');
         } else {
             ec_window.fadeIn(300);
             $('#ueditor_0').contents().find('body *:not(.binding)').bind('click', element_click_func).addClass('binding');
-            $(this).addClass('running').find('a').css({'background-color': '#20a162' }).text('解除进化');
+            $(this).addClass('running');
+
+            ($(this).children().length ? $(this).children() : $(this)).css({ 'background-color': '#20a162' }).text('解除进化');
         }
-    });
-    // 进化按钮
-    $('#operate-tool').prepend(reflesh_btn);
-    // 色板按钮
-    let open_color_plan = $('<li><a href="javascript:;" class="btn btn-default btn-xs" title="打开色板">开关色板</a></li>')
-        .on('click', function () {
-            $('#color-plan').fadeToggle(300);
+    };
+
+    // 执行函数
+    const run135 = function () {
+        // 解除模板会员限制
+        setInterval(() => {
+            let lis = $('#editor-template-scroll li');
+            for (let i = 0, len = lis.length; i < len; i++) {
+                lis[i].classList.remove('vip-style');
+            }
+            // vip删除线
+            $('.vip-flag').css('text-decoration', 'line-through');
+            // 去除小红点
+            $('.user-unread-msgnum').hide();
+            // 文章管理器会员
+            articleManager.setVIP(true);
+        }, 1000);
+        // 去除会员弹窗
+        window.style_click = window.show_role_vip_dialog = function () { };
+        // 伪装登录
+        // window.loged_user = 1;
+        // 会员弹窗
+        $('#add_xiaoshi').hide();
+        // 顶部导航栏后两个按钮
+        $('.category-nav.editor-nav>.nav-item:nth-last-child(-n+2)').hide();
+        // 移除全局菜单中非功能设置按钮
+        $('#fixed-side-bar li:not(#function-settings), #fixed-bar-pack-up').hide();
+
+        // 颜色增强
+        let origin_color_div = $('#color-choosen>div:first-child'); // 原始
+        let complementary_color_div = origin_color_div.clone(); // 互补
+        origin_color_div.before($('<p style="color:#fff;">原始色</p>'));
+        origin_color_div.after(complementary_color_div);
+        origin_color_div.after($('<p style="color:#fff;">互补色</p>'));
+        $('#color-plan-list .color-swatch').on('click', function () {
+            let cur_color = $(this).attr('style').match(/background-color:\s?([^;]+)/)[1];
+            console.log(cur_color, getComplementaryColor(cur_color));
+            origin_color_div.children('input').css('color', getComplementaryColor(cur_color))
+            complementary_color_div.children('input').attr('value', getComplementaryColor(cur_color));
+            complementary_color_div.children('input').css({ 'color': cur_color, 'background-color': getComplementaryColor(cur_color) });
         });
-    $('#operate-tool').prepend(open_color_plan)
+        // 进化按钮
+        let evolution_btn = $('<li style="margin-bottom: 20px;"><a href="javascript:;" class="btn btn-default btn-xs" style="color:#fff; background-color:#e8b004;" title="绑定监听器">编辑进化</a></li>').on('click', evolution);
+        $('#operate-tool').prepend(evolution_btn);
+        // 色板按钮
+        let open_color_plan = $('<li><a href="javascript:;" class="btn btn-default btn-xs" title="打开色板">开关色板</a></li>')
+            .on('click', function () {
+                $('#color-plan').fadeToggle(300);
+            });
+        $('#operate-tool').prepend(open_color_plan);
+    };
+
+    const run96 = function () {
+        // vip样式
+        setInterval(function(){
+            $('.rich_media_content').attr('data-vip',1);
+        }, 1000);
+        // 进化按钮
+        let evolution_btn = $('<button type="button" class="layui-btn layui-btn-primary" style="color:#fff; background-color:#e8b004;">编辑进化</button>').on('click', evolution);
+        $('.button-tools').prepend(evolution_btn);
+    };
+
+    // 判断执行
+    const host = window.location.host;
+    if (host.search(/www.135editor.com/) >= 0) run135();
+    else if (host.search(/bj.96weixin.com/) >= 0) run96();
 });
