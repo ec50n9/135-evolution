@@ -6,7 +6,7 @@
 // @match       *://www.365editor.com/*
 // @icon        https://www.135editor.com/img/vip/vip.png
 // @grant       none
-// @version     1.5
+// @version     1.6
 // @author      ec50n9
 // @description 去广告、解除vip限制、解除2个选项卡限制，配色方案中增加互补色选项，并增加自制css编辑器，可直接编辑元素css。
 // @license     MIT
@@ -26,8 +26,8 @@ $(function () {
         return '#' + iter;
     };
     // 添加样式
-    const addStyle = function(styleText){
-        $('body').prepend($(`<style>${styleText}</style>`));
+    const addStyle = function (styleText, document) {
+        (document ? document : $('head')).append($(`<style>${styleText}</style>`));
     }
     // css编辑面板
     let ec_window = $(`
@@ -80,6 +80,7 @@ $(function () {
             <textarea id="ec-win-html" rows="6" style="width:100%; border:2px solid #eee; padding:0 8px; border-radius:2px;">元素文本</textarea>
         </div>
     </div>
+    <button id="ec-win-delete" style="align-self:flex-end; margin-top:1em; padding:0 .8em; border-radius:.4em; border:2px solid #999;">删除元素</button>
     <button id="ec-win-parent" style="align-self:flex-end; margin-top:1em; padding:0 .8em; border-radius:.4em; border:2px solid #999;">父容器</button>
     <button id="ec-win-write" style="align-self:flex-end; margin-top:1em; padding:.2em .8em; border-radius:.4em; border:2px solid #eee; color:#fff; background-color:#2775b6">更新写入</button>
 </div>`).hide();
@@ -94,6 +95,7 @@ $(function () {
     let ec_win_attr = $('#ec-win-attr');
     let ec_child_list = $('#ec-child-list');
     let ec_win_html = $('#ec-win-html');
+    let ec_win_delete = $('#ec-win-delete');
     let ec_win_parent = $('#ec-win-parent');
     let ec_win_write = $('#ec-win-write');
     // 窗口拖拽
@@ -129,13 +131,15 @@ $(function () {
         });
     });
     // 初始化
-    const ecInit = function(){
-        addStyle(`.ec-active{outline: 1.5px dashed red !important; outline-offset: 2px; position: relative;}
-        #ec-change{color:#fff; background-color:#e8b004;}`);
+    const ecInit = function () {
+        addStyle(`#ec-change{color:#fff; background-color:#e8b004;}`);
     }
     // 进化函数
     const evolution = function () {
         let cur_editor = $('#ueditor_0');
+        // 注入样式
+        addStyle('.ec-active{outline: 1.5px dashed red !important; outline-offset: 2px; position: relative;}',
+            cur_editor.contents().find('head'));
 
         // 元素选中
         let element_click_func = function () {
@@ -148,7 +152,7 @@ $(function () {
             // 添加标记
             cur_editor.contents().find('body .ec-active').removeClass('ec-active');
             cur_element.addClass('ec-active');
-            
+
             // 清空内容
             ec_path_list.html('');
             ec_win_style.html('');
@@ -158,6 +162,7 @@ $(function () {
             ec_child_list.html('');
             ec_win_write.unbind();
             ec_win_parent.unbind();
+            ec_win_delete.unbind();
 
             // 添加内容
             cur_element.each(function () {
@@ -183,7 +188,7 @@ $(function () {
                                 let style = style_list[j];
                                 if (style) {
                                     let style_item = style.split(':');
-                                    let style_row = $(`<tr><th>${style_item[0]}</th><td><input type="text" value="${style_item[1]}" style="border:2px solid #eee;padding:0 8px; border-radius:2px;"></td></tr>`);
+                                    let style_row = $(`<tr><th>${style_item[0]}</th><td><input type="text" value="${style.slice(style.indexOf(':') + 1)}" style="border:2px solid #eee;padding:0 8px; border-radius:2px;"></td></tr>`);
                                     ec_win_style.append(style_row);
                                 }
                             }
@@ -210,8 +215,8 @@ $(function () {
                 });
                 if (list.html()) {
                     container.append(list);
-                    if(parent_li){
-                        parent_li.css('list-style-type', 'disc').on('click', function(){
+                    if (parent_li) {
+                        parent_li.css('list-style-type', 'disc').on('click', function () {
                             list.slideToggle(200);
                         });
                     }
@@ -259,6 +264,12 @@ $(function () {
             ec_win_parent.bind('click', function () {
                 cur_element.parent().click();
             });
+            // 删除按钮
+            ec_win_delete.bind('click', function(){
+                let parent = cur_element.parent();
+                cur_element.remove();
+                parent.click();
+            });
             return false;
         }
 
@@ -271,7 +282,7 @@ $(function () {
             cur_editor.contents().find('body .ec-active').removeClass('ec-active');
 
             const ec_change = $(this).find('#ec-change');
-            (ec_change.length?ec_change:$(this)).css({ 'background-color': '#e8b004' }).text('编辑进化');
+            (ec_change.length ? ec_change : $(this)).css({ 'background-color': '#e8b004' }).text('编辑进化');
         } else {
             ec_window.fadeIn(200);
             cur_editor.contents().find('body *:not(.binding,#ec-inject)').bind('click', element_click_func).addClass('binding');
@@ -281,7 +292,7 @@ $(function () {
             ec_default_tip.show();
 
             const ec_change = $(this).find('#ec-change');
-            (ec_change.length?ec_change:$(this)).css({ 'background-color': '#20a162' }).text('解除进化');
+            (ec_change.length ? ec_change : $(this)).css({ 'background-color': '#20a162' }).text('解除进化');
         }
     };
 
