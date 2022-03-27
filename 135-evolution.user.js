@@ -6,15 +6,57 @@
 // @match       *://www.365editor.com/*
 // @icon        https://www.135editor.com/img/vip/vip.png
 // @grant       none
-// @version     1.6
+// @version     1.7
 // @author      ec50n9
-// @description 去广告、解除vip限制、解除2个选项卡限制，配色方案中增加互补色选项，并增加自制css编辑器，可直接编辑元素css。
+// @description 为135、96、365编辑器去除广告，免vip，增加css样式编辑面板等...
 // @license     MIT
 // ==/UserScript==
 
 $(function () {
     'use strict';
 
+    // 翻译字典
+    const dict = {
+        'background': '背景',
+        'color': '颜色',
+        'top': '上',
+        'bottom': '下',
+        'left': '左',
+        'right': '右',
+        'height': '高',
+        'width': '宽',
+        'line': '行',
+        'align': '对齐',
+        'size': '大小',
+        'content': '内容',
+        'text': '文本',
+        'font': '字体',
+        'items': '项目',
+        'border': '边框',
+        'padding': '内边距',
+        'margin': '外边距',
+        'color': '字体颜色',
+        'letter-spacing': '字符间距',
+        'class': '类名',
+        'display': '显示',
+        'justify-content': '内容调整方式',
+        'vertical': '垂直',
+
+    };
+    const translate = function (name = '') {
+        if (dict[name]) {
+            return dict[name];
+        } else {
+            let fragments = name.split('-');
+            let result = '';
+            for (let i in fragments) {
+                let fragment = fragments[i];
+                let res = dict[fragment];
+                result += res ? res : fragment;
+            }
+            return result;
+        }
+    }
     // 计算互补色
     const getComplementaryColor = function (color = '') {
         const colorPart = color.slice(1);
@@ -53,6 +95,11 @@ $(function () {
         #ec-path-list li:nth-child(n+2)::before{
             content: '>';
             margin: 0 .5em;
+        }
+        #ec-win-style th, #ec-win-attr th{
+            width: 40%;
+            border-width: 1px;
+            font-weight:500;
         }
     </style>
     <p id="ec-default-tip">点击一个元素以查看其属性</p>
@@ -134,6 +181,14 @@ $(function () {
     const ecInit = function () {
         addStyle(`#ec-change{color:#fff; background-color:#e8b004;}`);
     }
+    // 翻译
+    const initShowTranslate = function(){
+        $('#ec-win-style th, #ec-win-attr th').mouseenter(function () {
+            $(this).text(translate($(this).text()));
+        }).mouseleave(function () {
+            $(this).text($(this).parent().attr('ec-attr'));
+        });
+    }
     // 进化函数
     const evolution = function () {
         let cur_editor = $('#ueditor_0');
@@ -188,17 +243,18 @@ $(function () {
                                 let style = style_list[j];
                                 if (style) {
                                     let style_item = style.split(':');
-                                    let style_row = $(`<tr><th>${style_item[0]}</th><td><input type="text" value="${style.slice(style.indexOf(':') + 1)}" style="border:2px solid #eee;padding:0 8px; border-radius:2px;"></td></tr>`);
+                                    let style_row = $(`<tr ec-attr="${style_item[0]}"><th>${style_item[0]}</th><td><input type="text" value="${style.slice(style.indexOf(':') + 1)}" style="border:2px solid #eee;padding:0 8px; border-radius:2px;"></td></tr>`);
                                     ec_win_style.append(style_row);
                                 }
                             }
                         } else {
                             // 处理其他属性
-                            let row = $(`<tr><th>${this.name}</th><td><input type="text" value="${this.value}" style="border:2px solid #eee;padding:0 8px; border-radius:2px;"></td></tr>`);
+                            let row = $(`<tr ec-attr="${this.name}"><th>${this.name}</th><td><input type="text" value="${this.value}" style="border:2px solid #eee;padding:0 8px; border-radius:2px;"></td></tr>`);
                             ec_win_attr.append(row);
                         }
                     }
                 });
+                initShowTranslate();
             });
             // 生成子元素树
             const genChildList = function (container, element, parent_li) {
@@ -233,7 +289,7 @@ $(function () {
                 for (let i = 0; i < sytle_tr_list.length; i++) {
                     let tr = $(sytle_tr_list[i]);
                     if (tr.find('input').val()) {
-                        style_text = style_text + tr.find('th').text() + ':' + tr.find('input').val() + ';';
+                        style_text = style_text + tr.attr('ec-attr') + ':' + tr.find('input').val() + ';';
                     }
                 }
                 element.attr('style', style_text);
@@ -243,19 +299,21 @@ $(function () {
                 let style_text = ec_win_input_style.val();
                 if (style_text) {
                     let temp = style_text.split(':');
-                    ec_win_style.append(`<tr><th>${temp[0]}</th><td><input type="text" value="${temp.length > 1 ? temp[1].replace(';', '') : ''}" style="border:2px solid #eee;padding:0 8px; border-radius:2px;"></td></tr>`);
+                    ec_win_style.append(`<tr ec-attr="${temp[0]}"><th>${temp[0]}</th><td><input type="text" value="${temp.length > 1 ? temp[1].replace(';', '') : ''}" style="border:2px solid #eee;padding:0 8px; border-radius:2px;"></td></tr>`);
                     ec_win_input_style.val('');
+                    initShowTranslate();
                 }
                 update_sytle(cur_element);
             });
             // 保存按钮
             ec_win_write.bind('click', function () {
+                // 保存样式
                 update_sytle(cur_element);
                 // 保存属性
                 let tr_list = ec_win_attr.find('tr');
                 for (let i = 0; i < tr_list.length; i++) {
                     let tr = $(tr_list[i]);
-                    cur_element.attr(tr.find('th').text(), tr.find('input').val());
+                    cur_element.attr(tr.attr('ec-attr'), tr.find('input').val());
                 }
                 // 保存内容
                 cur_element.html(ec_win_html.val());
@@ -265,7 +323,7 @@ $(function () {
                 cur_element.parent().click();
             });
             // 删除按钮
-            ec_win_delete.bind('click', function(){
+            ec_win_delete.bind('click', function () {
                 let parent = cur_element.parent();
                 cur_element.remove();
                 parent.click();
@@ -305,11 +363,13 @@ $(function () {
                 lis[i].classList.remove('vip-style');
             }
             // vip删除线
-            $('.vip-flag').css('text-decoration', 'line-through');
+            $('.vip-flag').remove();//.css('text-decoration', 'line-through').removeClass('vip-flag');
             // 去除小红点
             $('.user-unread-msgnum').hide();
-            // 文章管理器会员
-            articleManager.setVIP(true);
+            try {
+                // 文章管理器会员
+                articleManager.setVIP(true);
+            } catch (error) { }
         }, 1000);
         // 去除会员弹窗
         window.style_click = window.show_role_vip_dialog = function () { };
