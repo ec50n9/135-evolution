@@ -6,7 +6,7 @@
 // @match       *://www.365editor.com/*
 // @icon        https://www.135editor.com/img/vip/vip.png
 // @grant       none
-// @version     1.7
+// @version     1.8
 // @author      ec50n9
 // @description 为135、96、365编辑器去除广告，免vip，增加css样式编辑面板等...
 // @license     MIT
