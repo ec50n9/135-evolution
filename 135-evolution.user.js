@@ -197,8 +197,8 @@ $(function () {
             cur_editor.contents().find('head'));
 
         // 元素选中
-        let element_click_func = function () {
-            const cur_element = $(this);
+        let element_click_func = function (event) {
+            const cur_element = $(event.target);
 
             // 隐藏提示
             ec_window.find('*:not(style,#ec-default-tip)').show();
@@ -334,7 +334,7 @@ $(function () {
         // 为元素添加监听器
         if ($(this).hasClass('running')) {
             ec_window.fadeOut(200);
-            cur_editor.contents().find('body .binding').unbind().removeClass('binding');
+            cur_editor.contents().find('body').unbind();
             $(this).removeClass('running');
             // 解除标记
             cur_editor.contents().find('body .ec-active').removeClass('ec-active');
@@ -343,7 +343,7 @@ $(function () {
             (ec_change.length ? ec_change : $(this)).css({ 'background-color': '#e8b004' }).text('编辑进化');
         } else {
             ec_window.fadeIn(200);
-            cur_editor.contents().find('body *:not(.binding,#ec-inject)').bind('click', element_click_func).addClass('binding');
+            cur_editor.contents().find('body').bind('click', element_click_func);
             $(this).addClass('running');
             // 隐藏控件，显示提示
             ec_window.find('*:not(style,#ec-default-tip)').hide();
