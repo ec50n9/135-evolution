@@ -1,0 +1,80 @@
+<div id="ec_window">
+  <div id="ec_header" class="header">
+    <div class="header__title truncate">编辑面板</div>
+    <div class="header__btns-wrapper">
+      <div id="ec_win_close" class="header__btn"></div>
+      <div id="ec_win_mini" class="header__btn"></div>
+    </div>
+  </div>
+  <div id="ec_tabs" class="tab-wrapper">
+    <div id="ec_tab_element" class="tab tab--active">元素</div>
+    <div id="ec_tab_color" class="tab">色板</div>
+    <div id="ec_tab_template" class="tab">模板</div>
+  </div>
+  <div id="ec_panel_wrapper">
+    <div id="ec_panel_element" class="ec_panel">
+      <div id="ec_path_list"></div>
+      <div style="display:flex; flex-direction:column; overflow-y:scroll;">
+        <h2 style="margin-top:1em; font-weight:600">当前元素样式</h2>
+        <table id="ec_win_style"></table>
+        <div style="display:flex; align-items:center; margin-top:.5em">
+          <input id="ec_win_input_style" type="text" value="" placeholder="例: color: red;"
+            style="flex-grow:1; border:2px solid #eee;padding:0 8px; border-radius:2px;">
+          <button id="ec_win_add_style"
+            style="min-width:5em; margin-left:1em; padding:.2em .8em; border-radius:.4em; border:2px solid #eee; color:#fff; background-color:#3B82F6;">添加样式</button>
+        </div>
+        <div style="display:none; margin-top:.8em; color:#999; font-size:.8em;">
+          每次只能添加<strong>一条</strong>样式。<br>
+          添加样式后需要点击下方<strong>写入</strong>才可生效。<br>
+          清空编辑框后点击<strong>写入</strong>即可删除该行样式。
+        </div>
+        <h2 style="margin-top:1em; font-weight:600">属性</h2>
+        <table id="ec_win_attr"></table>
+        <h2 style="margin-top:1em; font-weight:600">子元素</h2>
+        <ul id="ec_child_list" style="margin:0;">
+        </ul>
+        <h2 style="margin-top:1em; font-weight:600">内容</h2>
+        <div style="width:100%">
+          <textarea id="ec_win_html" rows="5"
+            style="width:100%; border:2px solid #eee; padding:0 8px; border-radius:2px;">元素文本</textarea>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction: row; align-items: center; justify-content: right;">
+        <button id="ec_win_delete"
+          style="align-self:flex-end; padding:.2em .8em; border-radius:.4em; border:2px solid #eee; color:#fff; background-color:#B91C1C;">删除元素</button>
+        <button id="ec_win_parent"
+          style="align-self:flex-end; padding:.2em .8em; border-radius:.4em; border:2px solid #eee; color:#fff; background-color:#F59E0B;">父容器</button>
+        <button id="ec_win_write"
+          style="align-self:flex-end; padding:.2em .8em; border-radius:.4em; border:2px solid #eee; color:#fff; background-color:#3B82F6;">更新写入</button>
+      </div>
+    </div>
+    <div id="ec_panel_color" class="ec_panel">
+      <h2>调色板</h2>
+      <div id="color_picker">
+        <div id="color_color">
+          <div id="color_sat">
+            <div id="color_val">
+              <div id="color_dragger"></div>
+            </div>
+          </div>
+        </div>
+        <div id="color_h">
+          <div id="color_h_dragger"></div>
+        </div>
+        <div id="color_alpha">
+          <div id="color_alpha_inner">
+            <div id="color_alpha_dragger"></div>
+          </div>
+        </div>
+        <div id="color_preview_wrapper">
+          <div id="color_preview"></div>
+          <input id="color_preview_text" type="text" placeholder="点击色板以选择颜色值">
+        </div>
+        <button id="color_copy">复制颜色值</button>
+      </div>
+    </div>
+    <div id="ec_panel_template" class="ec_panel">
+      <h2>开发中。。。</h2>
+    </div>
+  </div>
+</div>
