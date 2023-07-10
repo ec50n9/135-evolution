@@ -1,0 +1,12 @@
+#ec-window {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+
+  overflow: visible;
+  z-index: 999;
+  font-family: PingFangSC-Regular, "Georgia Pro", Georgia, Times,
+    "Times New Roman", sans-serif;
+}

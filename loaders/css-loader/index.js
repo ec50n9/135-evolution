@@ -5,11 +5,16 @@
  * @returns
  */
 function loader(source) {
-  if (this.getOptions().type === "text") {
+  const {type} = this.getOptions()
+  if (type === "text") {
     return `
       export default ${JSON.stringify(source)};
     `;
-  } else {
+  }
+  else if(type === 'gm') {
+    return `GM_addStyle(${JSON.stringify(source)});`
+  }
+  else {
     return `
       const style = document.createElement('style');
       style.innerHTML = ${JSON.stringify(source)};

@@ -9,10 +9,10 @@ const __dirname = path.dirname(__filename);
 
 export default {
   mode: "production",
-  entry: ["./src/index.js"],
+  entry: "./src/main.js",
   output: {
-    filename: "bundle.user.js",
     path: path.resolve(__dirname, "dist"),
+    filename: "bundle.user.js",
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -30,6 +30,7 @@ export default {
 // @match       *://mp.weixin.qq.com/*
 // @icon        https://www.135editor.com/img/vip/vip.png
 // @require     https://cdn.jsdelivr.net/npm/jscolor-picker@2.0.4/jscolor.min.js
+// @require     https://unpkg.com/vue@3.3.4/dist/vue.global.js
 // @grant       GM_addStyle
 // @version     2.0.2-dev
 // @author      ec50n9
@@ -48,8 +49,8 @@ export default {
             loader: path.resolve("./loaders/css-loader"),
             options: {
               insert: "head",
-              // 'style' or 'text'
-              type: "text",
+              // 'style' or 'text' or 'gm'
+              type: "gm",
             },
           },
         ],
