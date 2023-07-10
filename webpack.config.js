@@ -27,6 +27,7 @@ export default {
 // @match       *://www.135editor.com/*
 // @match       *://bj.96weixin.com/*
 // @match       *://www.365editor.com/*
+// @match       *://mp.weixin.qq.com/*
 // @icon        https://www.135editor.com/img/vip/vip.png
 // @require     https://cdn.jsdelivr.net/npm/jscolor-picker@2.0.4/jscolor.min.js
 // @grant       GM_addStyle

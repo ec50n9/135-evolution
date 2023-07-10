@@ -72,6 +72,14 @@ const run365 = function (evolution) {
 };
 
 /**
+ * 微信公众号编辑器
+ * @param {()=>void} evolution
+ */
+const runMP = function (evolution) {
+  console.log("hello, wechat");
+}
+
+/**
  * @param {()=>void} evolution
  */
 export default function (evolution) {
@@ -79,4 +87,5 @@ export default function (evolution) {
   if (host.search(/www.135editor.com/) >= 0) run135(evolution);
   else if (host.search(/bj.96weixin.com/) >= 0) run96(evolution);
   else if (host.search(/www.365editor.com/) >= 0) run365(evolution);
+  else if (host.search(/mp.weixin.qq.com/) >= 0) runMP(evolution);
 }
