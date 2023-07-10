@@ -22,7 +22,7 @@ export default {
     new BannerWebpackPlugin({
       banner: `
 // ==UserScript==
-// @name        微信编辑器增强🧬
+// @name        微信编辑器增强🧬(dev)
 // @namespace   http://tampermonkey.net/
 // @match       *://www.135editor.com/*
 // @match       *://bj.96weixin.com/*
@@ -31,7 +31,7 @@ export default {
 // @icon        https://www.135editor.com/img/vip/vip.png
 // @require     https://cdn.jsdelivr.net/npm/jscolor-picker@2.0.4/jscolor.min.js
 // @grant       GM_addStyle
-// @version     2.0.1
+// @version     2.0.2-dev
 // @author      ec50n9
 // @description 为135、96、365编辑器去除广告，免vip，增加css样式编辑面板等...
 // @license     MIT
