@@ -5,7 +5,6 @@ import useColorPanel from "./components/use-color-panel.js";
 import useDrag from "./components/use-drag.js";
 import run from "./components/run.js";
 import { addStyle } from "./utils/inject-util.js";
-import evolution from "./components/evolution.js";
 
 console.log("--- inject ---");
 
@@ -61,7 +60,7 @@ useColorPanel(ec_window);
  */
 const ecInit = () => {
   addStyle(`#ec-change{color:#fff; background-color:#e8b004;}`);
-  run(()=>evolution(ec_window));
+  run(ec_window);
 };
 
 $(function () {

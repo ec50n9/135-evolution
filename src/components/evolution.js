@@ -146,7 +146,6 @@ function createClickFunc(ec_window) {
           }" style="border:2px solid #eee;padding:0 8px; border-radius:2px;"></td></tr>`
         );
         ec_win_input_style.val("");
-        initShowTranslate();
       }
       update_sytle(cur_element);
     });
@@ -164,11 +163,11 @@ function createClickFunc(ec_window) {
       cur_element.html((ec_win_html.val() || "").toString());
     });
     // 父辈按钮
-    ec_win_parent.bind("click", function () {
+    ec_win_parent.on("click", function () {
       cur_element.parent().click();
     });
     // 删除按钮
-    ec_win_delete.bind("click", function () {
+    ec_win_delete.on("click", function () {
       let parent = cur_element.parent();
       cur_element.remove();
       parent.click();
@@ -180,8 +179,9 @@ function createClickFunc(ec_window) {
 /**
  * 展示进化窗口
  * @param {JQuery<any>} ec_window
+ * @param {(isRunning: boolean)=>void} [callback]
  */
-function evolution( ec_window) {
+function evolution(ec_window, callback) {
   const rootElement = $("body");
   const cur_editor = $("#ueditor_0");
   // 注入样式
@@ -198,18 +198,27 @@ function evolution( ec_window) {
     // 解除标记
     cur_editor.contents().find("body .ective").removeClass("ective");
 
-    const ec_change = rootElement.find("#ec-change");
-    (ec_change.length ? ec_change : rootElement)
-      .css({ "background-color": "#e8b004" })
-      .text("编辑进化");
+    if (callback) {
+      callback(false);
+    } else {
+      const ec_change = rootElement.find("#ec-change");
+      (ec_change.length ? ec_change : rootElement)
+        .css({ "background-color": "#e8b004" })
+        .text("编辑进化");
+    }
   } else {
     ec_window.fadeIn(200);
-    cur_editor.contents().find("body").bind("click", createClickFunc(ec_window));
+    cur_editor.contents().find("body").on("click", createClickFunc(ec_window));
     rootElement.addClass("running");
-    const ec_change = rootElement.find("#ec-change");
-    (ec_change.length ? ec_change : rootElement)
-      .css({ "background-color": "#20a162" })
-      .text("解除进化");
+
+    if (callback) {
+      callback(true);
+    } else {
+      const ec_change = rootElement.find("#ec-change");
+      (ec_change.length ? ec_change : rootElement)
+        .css({ "background-color": "#20a162" })
+        .text("解除进化");
+    }
   }
 }
 
