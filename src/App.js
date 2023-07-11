@@ -139,20 +139,13 @@ const SectionPreview = {
         if (!this.threeD.dragging) return;
         const x = e.pageX - startX;
         const y = e.pageY - startY;
-        if (
-          !(
-            (this.threeD.x > maxAngle && x > 0) ||
-            (this.threeD.x < -maxAngle && x < 0)
-          )
-        )
-          this.threeD.x += x;
-        if (
-          !(
-            (this.threeD.y > maxAngle && y < 0) ||
-            (this.threeD.y < -maxAngle && y > 0)
-          )
-        )
-          this.threeD.y -= y;
+        (this.threeD.x > maxAngle && x > 0) ||
+          (this.threeD.x < -maxAngle && x < 0) ||
+          (this.threeD.x += x);
+        (this.threeD.y > maxAngle && y < 0) ||
+          (this.threeD.y < -maxAngle && y > 0) ||
+          (this.threeD.y -= y);
+
         startX = e.pageX;
         startY = e.pageY;
       };
