@@ -68,6 +68,11 @@ const SectionPreview = {
   data() {
     return {
       enable3D: false,
+      threeD: {
+        dragging: false,
+        x: 0,
+        y: 0,
+      },
     };
   },
   methods: {
@@ -80,22 +85,15 @@ const SectionPreview = {
       wrapper.innerHTML = html;
       const target = wrapper.firstChild;
 
-      // 开启3D
-      target.style.transform = "rotateY(45deg) rotateX(45deg)";
-      target.style.transformStyle = "preserve-3d";
-      // target.style.perspective = "60rem";
-      // target.style.backfaceVisibility = "hidden";
-
-      // 添加阴影
-      // target.style.boxShadow = "0 0 1rem #00000080";
-
       // 遍历子元素进行分层
       function makeLevel(el, level = 0) {
         el.style.boxShadow = "rgba(0, 0, 0, 0.1) 0px 4px 12px";
         el.style.transformStyle = "preserve-3d";
-        el.style.transform += `translateZ(${level * .2}rem)`;
+        el.style.transform += `translateZ(${level * 0.2}rem)`;
         if (el.children.length) {
-          Array.from(el.children).forEach((child) => makeLevel(child, level + 1));
+          Array.from(el.children).forEach((child) =>
+            makeLevel(child, level + 1)
+          );
         }
       }
       makeLevel(target);
@@ -109,6 +107,64 @@ const SectionPreview = {
         ? this.makeIt3D(this.sectionOuterHTML)
         : this.sectionOuterHTML;
     },
+  },
+  watch: {
+    enable3D(val) {
+      if (val) {
+        this.threeD.x = 45;
+        this.threeD.y = 45;
+      } else {
+        this.threeD.x = 0;
+        this.threeD.y = 0;
+      }
+    },
+  },
+  mounted() {
+    // previewEl拖拽更新视图角度
+    const maxAngle = 60;
+    const { previewWrapperEl } = this.$refs;
+    let startX = 0;
+    let startY = 0;
+    previewWrapperEl.addEventListener("mousedown", (e) => {
+      if (!this.enable3D) return;
+      e.preventDefault();
+
+      const listenerEl = document.body;
+
+      this.threeD.dragging = true;
+      startX = e.pageX;
+      startY = e.pageY;
+
+      const onMouseMove = (e) => {
+        if (!this.threeD.dragging) return;
+        const x = e.pageX - startX;
+        const y = e.pageY - startY;
+        if (
+          !(
+            (this.threeD.x > maxAngle && x > 0) ||
+            (this.threeD.x < -maxAngle && x < 0)
+          )
+        )
+          this.threeD.x += x;
+        if (
+          !(
+            (this.threeD.y > maxAngle && y < 0) ||
+            (this.threeD.y < -maxAngle && y > 0)
+          )
+        )
+          this.threeD.y -= y;
+        startX = e.pageX;
+        startY = e.pageY;
+      };
+      const onMouseUp = () => {
+        this.threeD.dragging = false;
+        listenerEl.removeEventListener("mousemove", onMouseMove);
+        listenerEl.removeEventListener("mouseup", onMouseUp);
+      };
+
+      listenerEl.addEventListener("mousemove", onMouseMove);
+      listenerEl.addEventListener("mouseup", onMouseUp);
+    });
   },
   render() {
     return h(
@@ -136,12 +192,57 @@ const SectionPreview = {
             `3D预览: ${this.enable3D ? "开" : "关"}`
           ),
         ]),
-        h("div", {
-          style: {
-            perspective: "60rem",
-          },
-          innerHTML: this.sectionOuterHTMLPreview ?? "请点击编辑器中的元素",
-        }),
+        h(
+          "div",
+          { ref: "previewWrapperEl" },
+          h("div", {
+            style: {
+              perspective: "60rem",
+              transform: `rotateY(${this.threeD.x}deg) rotateX(${this.threeD.y}deg)`,
+              transformStyle: "preserve-3d",
+              transition: this.threeD.dragging ? "none" : "all 0.3s",
+
+              userSelect: "none",
+              cursor: "grab",
+            },
+            innerHTML: this.sectionOuterHTMLPreview ?? "请点击编辑器中的元素",
+          })
+        ),
+        // 控制面板
+        !this.enable3D
+          ? ""
+          : h(
+              "div",
+              {
+                style: {
+                  display: "flex",
+                },
+              },
+              [
+                // 控制3d视图x轴
+                h("div", [
+                  h("div", "x轴"),
+                  h("input", {
+                    type: "range",
+                    min: -60,
+                    max: 60,
+                    value: this.threeD.x,
+                    onInput: (e) => (this.threeD.x = e.target.value),
+                  }),
+                ]),
+                // 控制3d视图y轴
+                h("div", [
+                  h("div", "y轴"),
+                  h("input", {
+                    type: "range",
+                    min: -60,
+                    max: 60,
+                    value: this.threeD.y,
+                    onInput: (e) => (this.threeD.y = e.target.value),
+                  }),
+                ]),
+              ]
+            ),
       ]
     );
   },
