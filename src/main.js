@@ -13,7 +13,16 @@ injectEcWindow();
 
 // 初始化vue
 function initEcWindow() {
-  Vue.createApp(App).mount("#ec-window");
+  const { createApp, h } = Vue;
+  createApp({
+    provide: {
+      title: "EcWindow",
+      activated: false,
+    },
+    render() {
+      return h(App);
+    },
+  }).mount("#ec-window");
 }
 
 window.onload = () => {

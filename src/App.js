@@ -61,9 +61,19 @@ function Header(props) {
   );
 }
 
+/**
+ * @param {string} cssText
+ * @param {Element} target
+ */
+function addStyle(cssText, target) {
+  const style = document.createElement("style");
+  style.textContent = cssText;
+  (target ? target : document.head).append(style);
+}
+
 export default {
   data() {
-    return { count: 0, x: 0, y: 0 };
+    return { count: 0, x: 0, y: 0, editorEl: null, editingEl: null };
   },
   mounted() {
     // 监听headerEl拖拽
@@ -85,6 +95,46 @@ export default {
       document.addEventListener("mousemove", move);
       document.addEventListener("mouseup", up);
     });
+
+    // 获取编辑器
+    this.editorEl = document.querySelector("#ueditor_0");
+
+    // 注入样式
+    addStyle(
+      `.ective {
+      outline: 1.5px dashed #f43f5e !important;
+      outline-offset: 2px !important;
+      position: relative !important;
+    }`,
+      this.editorEl.contentDocument.head
+    );
+
+    // 监听editorEl点击
+    this.editorEl.contentDocument
+      .querySelector("body")
+      .addEventListener("click", this.handleEditorClick);
+  },
+  beforeUnmount() {
+    // 移除样式
+    this.editorEl.contentDocument.head.lastElementChild.remove();
+
+    // 移除监听
+    this.editorEl.contentDocument
+      .querySelector("body")
+      .removeEventListener("click", this.handleEditorClick);
+  },
+  methods: {
+    // 处理编辑器点击
+    handleEditorClick(e) {
+      this.editingEl?.classList.remove("ective");
+      this.editingEl = e.target;
+      this.editingEl.classList.add("ective");
+    },
+  },
+  watch: {
+    editingEl(el) {
+      this.$refs.domContainer.innerHTML = el?.outerHTML ?? "请选择元素";
+    },
   },
   render() {
     return h(
@@ -106,7 +156,7 @@ export default {
       },
       [
         h(Header, { ref: "headerEl", title: `x: ${this.x}, y: ${this.y}` }),
-        this.count,
+        h("div", { ref: "domContainer", style: { padding: "0.5rem" } }),
       ]
     );
   },
