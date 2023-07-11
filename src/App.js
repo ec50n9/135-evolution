@@ -61,6 +61,92 @@ function Header(props) {
   );
 }
 
+const SectionPreview = {
+  props: {
+    sectionOuterHTML: String,
+  },
+  data() {
+    return {
+      enable3D: false,
+    };
+  },
+  methods: {
+    /**
+     * 生成3D预览
+     * @param {string} html html文本
+     */
+    makeIt3D(html) {
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = html;
+      const target = wrapper.firstChild;
+
+      // 开启3D
+      target.style.transform = "rotateY(45deg) rotateX(45deg)";
+      target.style.transformStyle = "preserve-3d";
+      // target.style.perspective = "60rem";
+      // target.style.backfaceVisibility = "hidden";
+
+      // 添加阴影
+      // target.style.boxShadow = "0 0 1rem #00000080";
+
+      // 遍历子元素进行分层
+      function makeLevel(el, level = 0) {
+        el.style.boxShadow = "rgba(0, 0, 0, 0.1) 0px 4px 12px";
+        el.style.transformStyle = "preserve-3d";
+        el.style.transform += `translateZ(${level * .2}rem)`;
+        if (el.children.length) {
+          Array.from(el.children).forEach((child) => makeLevel(child, level + 1));
+        }
+      }
+      makeLevel(target);
+
+      return wrapper.innerHTML;
+    },
+  },
+  computed: {
+    sectionOuterHTMLPreview() {
+      return this.sectionOuterHTML && this.enable3D
+        ? this.makeIt3D(this.sectionOuterHTML)
+        : this.sectionOuterHTML;
+    },
+  },
+  render() {
+    return h(
+      "div",
+      {
+        style: {
+          display: "flex",
+          flexDirection: "column",
+          rowGap: "0.5rem",
+          padding: "0.5rem",
+        },
+      },
+      [
+        h("div", { style: { display: "flex", alignItems: "center" } }, [
+          h(
+            "div",
+            {
+              style: {
+                padding: "0 .3rem",
+                color: "#fff",
+                backgroundColor: "#3b82f6",
+              },
+              onClick: () => (this.enable3D = !this.enable3D),
+            },
+            `3D预览: ${this.enable3D ? "开" : "关"}`
+          ),
+        ]),
+        h("div", {
+          style: {
+            perspective: "60rem",
+          },
+          innerHTML: this.sectionOuterHTMLPreview ?? "请点击编辑器中的元素",
+        }),
+      ]
+    );
+  },
+};
+
 /**
  * @param {string} cssText
  * @param {Element} target
@@ -131,11 +217,6 @@ export default {
       this.editingEl.classList.add("ective");
     },
   },
-  watch: {
-    editingEl(el) {
-      this.$refs.domContainer.innerHTML = el?.outerHTML ?? "请选择元素";
-    },
-  },
   render() {
     return h(
       "div",
@@ -156,7 +237,7 @@ export default {
       },
       [
         h(Header, { ref: "headerEl", title: `x: ${this.x}, y: ${this.y}` }),
-        h("div", { ref: "domContainer", style: { padding: "0.5rem" } }),
+        h(SectionPreview, { sectionOuterHTML: this.editingEl?.outerHTML }),
       ]
     );
   },
