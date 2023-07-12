@@ -1,4 +1,4 @@
-import App from "./App.js";
+import Preview from "./views/preview.js";
 import "./main.css";
 
 // 创建 #ec_window 元素
@@ -20,7 +20,7 @@ function initEcWindow() {
   const { createApp, h } = Vue;
   createApp({
     render() {
-      return h(App);
+      return h(Preview);
     },
   }).mount("#ec-window");
 

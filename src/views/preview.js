@@ -1,5 +1,5 @@
-import EcWindow from "./components/ec-window.js";
-import { addStyle } from "./utils/inject-util.js";
+import EcWindow from "../components/ec-window.js";
+import { addStyle } from "../utils/inject-util.js";
 
 const { h } = Vue;
 
