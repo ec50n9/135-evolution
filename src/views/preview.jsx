@@ -1,6 +1,4 @@
-import EcWindow from "../components/ec-window.js";
-
-const { h } = Vue;
+import EcWindow from "../components/ec-window.jsx";
 
 /**
  * 预览区域
@@ -104,47 +102,29 @@ const SectionPreview = {
     });
   },
   render() {
-    return h(
-      "div",
-      {
-        style: {
-          display: "flex",
-          flexDirection: "column",
-          rowGap: "0.5rem",
-        },
-      },
-      [
-        h("div", { style: { display: "flex", alignItems: "center" } }, [
-          h(
-            "div",
-            {
-              style: {
-                padding: "0 .3rem",
-                color: "#fff",
-                backgroundColor: "#3b82f6",
-              },
-              onClick: () => (this.enable3D = !this.enable3D),
-            },
-            `3D预览: ${this.enable3D ? "开" : "关"}`
-          ),
-        ]),
-        h(
-          "div",
-          { ref: "previewWrapperEl" },
-          h("div", {
-            style: {
-              perspective: "60rem",
-              transform: `rotateY(${this.threeD.x}deg) rotateX(${this.threeD.y}deg)`,
-              transformStyle: "preserve-3d",
-              transition: this.threeD.dragging ? "none" : "all 0.3s",
-
-              userSelect: "none",
-              cursor: "grab",
-            },
-            innerHTML: this.sectionOuterHTMLPreview ?? "请点击编辑器中的元素",
-          })
-        ),
-      ]
+    return (
+      <div style='display: flex; flex-direction: column; row-gap: 0.5rem;'>
+        <div style='display: flex; align-items: center;'>
+          <div
+            style='padding: 0 .3rem; color: #fff; background-color: #3b82f6;'
+            onClick={() => (this.enable3D = !this.enable3D)}
+          >
+            3D预览: {this.enable3D ? "开" : "关"}
+          </div>
+        </div>
+        <div ref='previewWrapperEl'>
+          <div
+            style={`perspective: 60rem; transform: rotateY(${
+              this.threeD.x
+            }deg) rotateX(${
+              this.threeD.y
+            }deg); transform-style: preserve-3d; transition: ${
+              this.threeD.dragging ? "none" : "all 0.3s"
+            }; user-select: none; cursor: grab;`}
+            innerHTML={this.sectionOuterHTMLPreview ?? "请点击编辑器中的元素"}
+          ></div>
+        </div>
+      </div>
     );
   },
 };
@@ -157,15 +137,10 @@ export default {
     },
   },
   render() {
-    return h(
-      EcWindow,
-      {
-        title: "预览",
-      },
-      {
-        default: () =>
-          h(SectionPreview, { sectionOuterHTML: this.context.editingEl?.outerHTML }),
-      }
+    return (
+      <EcWindow title='预览'>
+        <SectionPreview sectionOuterHTML={this.context.editingEl?.outerHTML} />
+      </EcWindow>
     );
   },
 };

@@ -9,10 +9,13 @@ const __dirname = path.dirname(__filename);
 
 export default {
   mode: "production",
-  entry: "./src/main.js",
+  entry: "./src/main.jsx",
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "bundle.user.js",
+  },
+  externals: {
+    vue: "Vue",
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -42,6 +45,17 @@ export default {
   ],
   module: {
     rules: [
+      {
+        test: /\.jsx$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env"],
+            plugins: ["@vue/babel-plugin-jsx"],
+          },
+        },
+      },
       {
         test: /\.css$/,
         exclude: /node_modules/,

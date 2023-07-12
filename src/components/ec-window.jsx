@@ -17,21 +17,50 @@ function Header(props) {
     },
   ];
 
-  const Btn = ({ color }) =>
-    h("div", {
-      style: {
+  const Btn = ({ color }) => (
+    <div
+      style={{
         width: "1rem",
         height: "1rem",
         borderRadius: "50%",
         backgroundColor: color,
         cursor: "pointer",
-      },
-    });
+      }}
+    />
+  );
 
-  return h(
-    "div",
-    {
-      style: {
+  // return h(
+  //   "div",
+  //   {
+  //     style: {
+  //       display: "flex",
+  //       justifyContent: "space-between",
+  //       alignItems: "center",
+  //       height: "2rem",
+  //       padding: "0 0.5rem",
+  //       borderBottom: "1px solid #e5e7eb",
+  //       userSelect: "none",
+  //       cursor: "move",
+  //     },
+  //   },
+  //   [
+  //     h("div", props.title),
+  //     h(
+  //       "div",
+  //       {
+  //         style: {
+  //           display: "flex",
+  //           columnGap: "0.5rem",
+  //         },
+  //       },
+  //       btns.map((btn) => h(Btn, btn))
+  //     ),
+  //   ]
+  // );
+  return (
+    <div
+      ref='headerEl'
+      style={{
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
@@ -40,21 +69,20 @@ function Header(props) {
         borderBottom: "1px solid #e5e7eb",
         userSelect: "none",
         cursor: "move",
-      },
-    },
-    [
-      h("div", props.title),
-      h(
-        "div",
-        {
-          style: {
-            display: "flex",
-            columnGap: "0.5rem",
-          },
-        },
-        btns.map((btn) => h(Btn, btn))
-      ),
-    ]
+      }}
+    >
+      <div>{props.title}</div>
+      <div
+        style={{
+          display: "flex",
+          columnGap: "0.5rem",
+        }}
+      >
+        {btns.map((btn) => (
+          <Btn {...btn} />
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -65,13 +93,10 @@ export default {
       type: String,
       default: "EcWindow",
     },
-    activated: {
-      type: Boolean,
-      default: false,
-    },
   },
   data() {
     return {
+      activated: true,
       x: 0,
       y: 0,
     };
@@ -105,10 +130,9 @@ export default {
     },
   },
   render() {
-    return h(
-      "div",
-      {
-        style: {
+    return (
+      <div
+        style={{
           position: "fixed",
           left: `${this.x}px`,
           top: `${this.y}px`,
@@ -120,29 +144,26 @@ export default {
           boxShadow:
             "rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px",
           borderRadius: "1em",
-        },
-      },
-      [
-        // 头部
-        h(Header, {
-          ref: "headerEl",
-          title: this.title,
-          onMinimize: this.onMinimize,
-          onClose: this.onClose,
-        }),
-        // 内容
-        h(
-          "div",
-          {
-            style: {
-              flex: 1,
-              overflow: "hidden auto",
-              padding: "0.5rem",
-            },
-          },
-          this.$slots.default()
-        ),
-      ]
+        }}
+      >
+        {/* 头部 */}
+        <Header
+          ref='headerEl'
+          title={this.title}
+          onMinimize={this.onMinimize}
+          onClose={this.onClose}
+        />
+        {/* 内容 */}
+        <div
+          style={{
+            flex: 1,
+            overflow: "hidden auto",
+            padding: "0.5rem",
+          }}
+        >
+          {this.$slots.default()}
+        </div>
+      </div>
     );
   },
 };

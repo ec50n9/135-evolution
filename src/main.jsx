@@ -1,6 +1,7 @@
-import Preview from "./views/preview.js";
-import CssEditor from "./views/css-editor.js";
+import Preview from "./views/preview.jsx";
+import CssEditor from "./views/css-editor.jsx";
 import { addStyle } from "./utils/inject-util.js";
+import { createApp } from "vue";
 import "./main.css";
 
 // 创建 #ec_window 元素
@@ -19,7 +20,6 @@ injectEcWindow();
 function initEcWindow() {
   console.log("--- initEcWindow start ---");
 
-  const { createApp, h } = Vue;
   createApp({
     data() {
       return {
@@ -62,10 +62,16 @@ function initEcWindow() {
         .removeEventListener("click", this.handleEditorClick);
     },
     render() {
-      return h("div", [
-        h(Preview, { context: this.context }),
-        h(CssEditor, { context: this.context }),
-      ]);
+      // return h("div", [
+      //   h(Preview, { context: this.context }),
+      //   h(CssEditor, { context: this.context }),
+      // ]);
+      return (
+        <div>
+          <Preview context={this.context} />
+          <CssEditor context={this.context} />
+        </div>
+      );
     },
   }).mount("#ec-window");
 
