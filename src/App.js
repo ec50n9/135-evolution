@@ -168,6 +168,8 @@ const SectionPreview = {
           flexDirection: "column",
           rowGap: "0.5rem",
           padding: "0.5rem",
+          overflowX: "visible",
+          overflowY: "auto",
         },
       },
       [
@@ -201,41 +203,6 @@ const SectionPreview = {
             innerHTML: this.sectionOuterHTMLPreview ?? "请点击编辑器中的元素",
           })
         ),
-        // 控制面板
-        !this.enable3D
-          ? ""
-          : h(
-              "div",
-              {
-                style: {
-                  display: "flex",
-                },
-              },
-              [
-                // 控制3d视图x轴
-                h("div", [
-                  h("div", "x轴"),
-                  h("input", {
-                    type: "range",
-                    min: -60,
-                    max: 60,
-                    value: this.threeD.x,
-                    onInput: (e) => (this.threeD.x = e.target.value),
-                  }),
-                ]),
-                // 控制3d视图y轴
-                h("div", [
-                  h("div", "y轴"),
-                  h("input", {
-                    type: "range",
-                    min: -60,
-                    max: 60,
-                    value: this.threeD.y,
-                    onInput: (e) => (this.threeD.y = e.target.value),
-                  }),
-                ]),
-              ]
-            ),
       ]
     );
   },
@@ -341,7 +308,7 @@ export default {
       [
         h(Header, {
           ref: "headerEl",
-          title: `x: ${this.x}, y: ${this.y}`,
+          title: `预览`,
           onMinimize: this.handleMinimize,
           onClose: this.handleClose,
         }),
