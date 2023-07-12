@@ -1,3 +1,5 @@
+import { addStyle } from "./utils/inject-util.js";
+
 const { h } = Vue;
 
 /**
@@ -207,17 +209,6 @@ const SectionPreview = {
     );
   },
 };
-
-/**
- * 添加样式
- * @param {string} cssText
- * @param {Element} target
- */
-function addStyle(cssText, target) {
-  const style = document.createElement("style");
-  style.textContent = cssText;
-  (target ? target : document.head).append(style);
-}
 
 export default {
   data() {
