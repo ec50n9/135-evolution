@@ -1,64 +1,7 @@
+import EcWindow from "./components/ec-window.js";
 import { addStyle } from "./utils/inject-util.js";
 
 const { h } = Vue;
-
-/**
- * 窗口标题栏
- * @param {{title: string}} props
- * @returns
- */
-function Header(props) {
-  const btns = [
-    {
-      color: "#f59e0b",
-      onClick: props.onMinimize,
-    },
-    {
-      color: "#ef4444",
-      onClick: props.onClose,
-    },
-  ];
-
-  const Btn = ({ color }) =>
-    h("div", {
-      style: {
-        width: "1rem",
-        height: "1rem",
-        borderRadius: "50%",
-        backgroundColor: color,
-        cursor: "pointer",
-      },
-    });
-
-  return h(
-    "div",
-    {
-      style: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        height: "2rem",
-        padding: "0 0.5rem",
-        borderBottom: "1px solid #e5e7eb",
-        userSelect: "none",
-        cursor: "move",
-      },
-    },
-    [
-      h("div", props.title),
-      h(
-        "div",
-        {
-          style: {
-            display: "flex",
-            columnGap: "0.5rem",
-          },
-        },
-        btns.map((btn) => h(Btn, btn))
-      ),
-    ]
-  );
-}
 
 /**
  * 预览区域
@@ -169,9 +112,6 @@ const SectionPreview = {
           display: "flex",
           flexDirection: "column",
           rowGap: "0.5rem",
-          padding: "0.5rem",
-          overflowX: "visible",
-          overflowY: "auto",
         },
       },
       [
@@ -212,29 +152,9 @@ const SectionPreview = {
 
 export default {
   data() {
-    return { count: 0, x: 0, y: 0, editorEl: null, editingEl: null };
+    return { editorEl: null, editingEl: null };
   },
   mounted() {
-    // 监听headerEl拖拽
-    const { headerEl } = this.$refs;
-    headerEl.addEventListener("mousedown", (e) => {
-      const { clientX, clientY } = e;
-      const { left, top } = headerEl.getBoundingClientRect();
-      const disX = clientX - left;
-      const disY = clientY - top;
-      const move = (e) => {
-        const { clientX, clientY } = e;
-        this.x = clientX - disX;
-        this.y = clientY - disY;
-      };
-      const up = () => {
-        document.removeEventListener("mousemove", move);
-        document.removeEventListener("mouseup", up);
-      };
-      document.addEventListener("mousemove", move);
-      document.addEventListener("mouseup", up);
-    });
-
     // 获取编辑器
     this.editorEl = document.querySelector("#ueditor_0");
 
@@ -263,14 +183,6 @@ export default {
       .removeEventListener("click", this.handleEditorClick);
   },
   methods: {
-    // 处理最小化点击
-    handleMinimize() {
-      console.log("handleMinimizeClick");
-    },
-    // 处理关闭点击
-    handleClose() {
-      console.log("handleCloseClick");
-    },
     // 处理编辑器点击
     handleEditorClick(e) {
       this.editingEl?.classList.remove("ective");
@@ -280,31 +192,12 @@ export default {
   },
   render() {
     return h(
-      "div",
+      EcWindow,
+      {},
       {
-        style: {
-          position: "fixed",
-          left: `${this.x}px`,
-          top: `${this.y}px`,
-          display: "flex",
-          flexDirection: "column",
-          width: "24em",
-          maxHeight: "90%",
-          backgroundColor: "#fff",
-          boxShadow:
-            "rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px",
-          borderRadius: "1em",
-        },
-      },
-      [
-        h(Header, {
-          ref: "headerEl",
-          title: `预览`,
-          onMinimize: this.handleMinimize,
-          onClose: this.handleClose,
-        }),
-        h(SectionPreview, { sectionOuterHTML: this.editingEl?.outerHTML }),
-      ]
+        default: () =>
+          h(SectionPreview, { sectionOuterHTML: this.editingEl?.outerHTML }),
+      }
     );
   },
 };
