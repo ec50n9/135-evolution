@@ -9,15 +9,11 @@ function Header(props) {
   const btns = [
     {
       color: "#f59e0b",
-      onClick: () => {
-        console.log("mini");
-      },
+      onClick: props.onMinimize,
     },
     {
       color: "#ef4444",
-      onClick: () => {
-        console.log("close");
-      },
+      onClick: props.onClose,
     },
   ];
 
@@ -28,6 +24,7 @@ function Header(props) {
         height: "1rem",
         borderRadius: "50%",
         backgroundColor: color,
+        cursor: "pointer",
       },
     });
 
@@ -61,6 +58,9 @@ function Header(props) {
   );
 }
 
+/**
+ * 预览区域
+ */
 const SectionPreview = {
   props: {
     sectionOuterHTML: String,
@@ -242,6 +242,7 @@ const SectionPreview = {
 };
 
 /**
+ * 添加样式
  * @param {string} cssText
  * @param {Element} target
  */
@@ -279,7 +280,7 @@ export default {
     // 获取编辑器
     this.editorEl = document.querySelector("#ueditor_0");
 
-    // 注入样式
+    // 注入激活后的样式
     addStyle(
       `.ective {
       outline: 1.5px dashed #f43f5e !important;
@@ -304,6 +305,14 @@ export default {
       .removeEventListener("click", this.handleEditorClick);
   },
   methods: {
+    // 处理最小化点击
+    handleMinimize() {
+      console.log("handleMinimizeClick");
+    },
+    // 处理关闭点击
+    handleClose() {
+      console.log("handleCloseClick");
+    },
     // 处理编辑器点击
     handleEditorClick(e) {
       this.editingEl?.classList.remove("ective");
@@ -330,7 +339,12 @@ export default {
         },
       },
       [
-        h(Header, { ref: "headerEl", title: `x: ${this.x}, y: ${this.y}` }),
+        h(Header, {
+          ref: "headerEl",
+          title: `x: ${this.x}, y: ${this.y}`,
+          onMinimize: this.handleMinimize,
+          onClose: this.handleClose,
+        }),
         h(SectionPreview, { sectionOuterHTML: this.editingEl?.outerHTML }),
       ]
     );
