@@ -159,7 +159,9 @@ export default {
   render() {
     return h(
       EcWindow,
-      {},
+      {
+        title: "预览",
+      },
       {
         default: () =>
           h(SectionPreview, { sectionOuterHTML: this.context.editingEl?.outerHTML }),

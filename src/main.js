@@ -1,4 +1,5 @@
 import Preview from "./views/preview.js";
+import CssEditor from "./views/css-editor.js";
 import { addStyle } from "./utils/inject-util.js";
 import "./main.css";
 
@@ -61,7 +62,10 @@ function initEcWindow() {
         .removeEventListener("click", this.handleEditorClick);
     },
     render() {
-      return h(Preview, { context: this.context });
+      return h("div", [
+        h(Preview, { context: this.context }),
+        h(CssEditor, { context: this.context }),
+      ]);
     },
   }).mount("#ec-window");
 
