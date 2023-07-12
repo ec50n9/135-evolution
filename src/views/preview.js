@@ -1,5 +1,4 @@
 import EcWindow from "../components/ec-window.js";
-import { addStyle } from "../utils/inject-util.js";
 
 const { h } = Vue;
 
@@ -151,43 +150,10 @@ const SectionPreview = {
 };
 
 export default {
-  data() {
-    return { editorEl: null, editingEl: null };
-  },
-  mounted() {
-    // 获取编辑器
-    this.editorEl = document.querySelector("#ueditor_0");
-
-    // 注入激活后的样式
-    addStyle(
-      `.ective {
-      outline: 1.5px dashed #f43f5e !important;
-      outline-offset: 2px !important;
-      position: relative !important;
-    }`,
-      this.editorEl.contentDocument.head
-    );
-
-    // 监听editorEl点击
-    this.editorEl.contentDocument
-      .querySelector("body")
-      .addEventListener("click", this.handleEditorClick);
-  },
-  beforeUnmount() {
-    // 移除样式
-    this.editorEl.contentDocument.head.lastElementChild.remove();
-
-    // 移除监听
-    this.editorEl.contentDocument
-      .querySelector("body")
-      .removeEventListener("click", this.handleEditorClick);
-  },
-  methods: {
-    // 处理编辑器点击
-    handleEditorClick(e) {
-      this.editingEl?.classList.remove("ective");
-      this.editingEl = e.target;
-      this.editingEl.classList.add("ective");
+  props: {
+    context: {
+      type: Object,
+      required: true,
     },
   },
   render() {
@@ -196,7 +162,7 @@ export default {
       {},
       {
         default: () =>
-          h(SectionPreview, { sectionOuterHTML: this.editingEl?.outerHTML }),
+          h(SectionPreview, { sectionOuterHTML: this.context.editingEl?.outerHTML }),
       }
     );
   },
