@@ -44,6 +44,7 @@ export default {
     rules: [
       {
         test: /\.css$/,
+        exclude: /node_modules/,
         use: [
           {
             loader: path.resolve("./loaders/css-loader"),
