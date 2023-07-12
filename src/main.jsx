@@ -1,5 +1,6 @@
 import Preview from "./views/preview.jsx";
 import CssEditor from "./views/css-editor.jsx";
+import Gogo from "./components/gogo.vue";
 import { addStyle } from "./utils/inject-util.js";
 import { createApp } from "vue";
 import "./main.css";
@@ -62,14 +63,11 @@ function initEcWindow() {
         .removeEventListener("click", this.handleEditorClick);
     },
     render() {
-      // return h("div", [
-      //   h(Preview, { context: this.context }),
-      //   h(CssEditor, { context: this.context }),
-      // ]);
       return (
         <div>
           <Preview context={this.context} />
           <CssEditor context={this.context} />
+          <Gogo />
         </div>
       );
     },

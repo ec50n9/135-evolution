@@ -1,5 +1,6 @@
 import path from "path";
 
+import { VueLoaderPlugin } from "vue-loader";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import BannerWebpackPlugin from "./plugins/banner-webpack-plugin/index.js";
 
@@ -18,6 +19,7 @@ export default {
     vue: "Vue",
   },
   plugins: [
+    new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
       template: "./src/index.html",
       filename: "index.html",
@@ -53,6 +55,18 @@ export default {
           options: {
             presets: ["@babel/preset-env"],
             plugins: ["@vue/babel-plugin-jsx"],
+          },
+        },
+      },
+      {
+        test: /\.vue$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "vue-loader",
+          options: {
+            compilerOptions: {
+              preserveWhitespace: false,
+            },
           },
         },
       },
