@@ -1,5 +1,5 @@
 import Preview from "./views/preview/index.vue";
-import CssEditor from "./views/css-editor.jsx";
+import CssEditor from "./views/css-editor/index.vue";
 import Gogo from "./components/gogo.vue";
 import { addStyle } from "./utils/inject-util.js";
 import { createApp } from "vue";
