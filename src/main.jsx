@@ -1,7 +1,4 @@
-import Preview from "./views/preview/index.vue";
-import CssEditor from "./views/css-editor/index.vue";
-import Gogo from "./components/gogo.vue";
-import { addStyle } from "./utils/inject-util.js";
+import WindowsManager from "./windows-manager.vue";
 import { createApp } from "vue";
 import "./main.scss";
 
@@ -21,57 +18,7 @@ injectEcWindow();
 function initEcWindow() {
   console.log("--- initEcWindow start ---");
 
-  createApp({
-    data() {
-      return {
-        context: {
-          editorEl: null,
-          editingEl: null,
-        },
-      };
-    },
-    mounted() {
-      // 获取编辑器
-      this.context.editorEl = document.querySelector("#ueditor_0");
-
-      // 注入激活后的样式
-      addStyle(
-        `.ective {
-            outline: 1.5px dashed #f43f5e !important;
-            outline-offset: 2px !important;
-            position: relative !important;
-          }`,
-        this.context.editorEl.contentDocument.head
-      );
-
-      // 监听editorEl点击
-      this.context.editorEl.contentDocument
-        .querySelector("body")
-        .addEventListener("click", (e) => {
-          this.context.editingEl?.classList.remove("ective");
-          this.context.editingEl = e.target;
-          this.context.editingEl.classList.add("ective");
-        });
-    },
-    beforeUnmount() {
-      // 移除样式
-      this.context.editorEl.contentDocument.head.lastElementChild.remove();
-
-      // 移除监听
-      this.context.editorEl.contentDocument
-        .querySelector("body")
-        .removeEventListener("click", this.handleEditorClick);
-    },
-    render() {
-      return (
-        <div>
-          <Preview context={this.context} />
-          <CssEditor context={this.context} />
-          <Gogo />
-        </div>
-      );
-    },
-  }).mount("#ec-window");
+  createApp(WindowsManager).mount("#ec-window");
 
   console.log("--- initEcWindow end ---");
 }
