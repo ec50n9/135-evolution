@@ -1,5 +1,3 @@
-const { h } = Vue;
-
 /**
  * 窗口标题栏
  * @param {{title: string}} props
@@ -29,37 +27,8 @@ function Header(props) {
     />
   );
 
-  // return h(
-  //   "div",
-  //   {
-  //     style: {
-  //       display: "flex",
-  //       justifyContent: "space-between",
-  //       alignItems: "center",
-  //       height: "2rem",
-  //       padding: "0 0.5rem",
-  //       borderBottom: "1px solid #e5e7eb",
-  //       userSelect: "none",
-  //       cursor: "move",
-  //     },
-  //   },
-  //   [
-  //     h("div", props.title),
-  //     h(
-  //       "div",
-  //       {
-  //         style: {
-  //           display: "flex",
-  //           columnGap: "0.5rem",
-  //         },
-  //       },
-  //       btns.map((btn) => h(Btn, btn))
-  //     ),
-  //   ]
-  // );
   return (
     <div
-      ref='headerEl'
       style={{
         display: "flex",
         justifyContent: "space-between",
