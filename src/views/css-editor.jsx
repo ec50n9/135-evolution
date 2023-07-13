@@ -93,7 +93,7 @@ export default {
   },
   render() {
     return (
-      <EcWindow title='CSS编辑器hello'>
+      <EcWindow title='CSS编辑器'>
         <CssEditor
           cssText={this.cssText}
           onUpdate:cssText={(val) => (this.cssText = val)}
