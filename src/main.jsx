@@ -1,4 +1,4 @@
-import Preview from "./views/preview.jsx";
+import Preview from "./views/preview/index.vue";
 import CssEditor from "./views/css-editor.jsx";
 import Gogo from "./components/gogo.vue";
 import { addStyle } from "./utils/inject-util.js";
