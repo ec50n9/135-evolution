@@ -71,6 +71,21 @@ export default {
         },
       },
       {
+        test: /\.s[ac]ss$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: path.resolve("./loaders/css-loader"),
+            options: {
+              insert: "head",
+              // 'style' or 'text' or 'gm'
+              type: "gm",
+            },
+          },
+          "sass-loader",
+        ],
+      },
+      {
         test: /\.css$/,
         exclude: /node_modules/,
         use: [

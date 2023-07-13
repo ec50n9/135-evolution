@@ -3,7 +3,7 @@ import CssEditor from "./views/css-editor.jsx";
 import Gogo from "./components/gogo.vue";
 import { addStyle } from "./utils/inject-util.js";
 import { createApp } from "vue";
-import "./main.css";
+import "./main.scss";
 
 // 创建 #ec_window 元素
 function injectEcWindow() {
