@@ -1,21 +1,17 @@
 <script setup>
-import EcWindow from '../../components/ec-window/index.vue'
-import HtmlPreview from './html-preview.vue';
+import EcWindow from "../../components/ec-window/index.vue";
+import HtmlPreview from "./html-preview.vue";
 
 const props = defineProps({
   context: {
     type: Object,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 </script>
 
 <template>
   <EcWindow title="预览窗口">
-    <HtmlPreview :htmlText="props.context.editingEl?.outerHTML"></HtmlPreview>
+    <HtmlPreview :htmlText="props.context.editingEl?.outerHTML" />
   </EcWindow>
 </template>
-
-<style lang="scss" scoped>
-
-</style>
