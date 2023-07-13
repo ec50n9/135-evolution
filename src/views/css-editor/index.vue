@@ -1,7 +1,9 @@
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, inject } from "vue";
 import EcWindow from "../../components/ec-window/index.vue";
 import Editor from "./editor.vue";
+
+const globalContext = inject("global-context");
 
 // 格式化css文本
 const formatCssText = (cssText) => {
@@ -28,16 +30,9 @@ const minimizeCssText = (cssText) => {
   return result;
 };
 
-const props = defineProps({
-  context: {
-    type: Object,
-    required: true,
-  },
-});
-
 const cssText = ref("");
 watch(
-  () => props.context.editingEl,
+  () => globalContext.data.mirrorEl,
   (el) => {
     const originCssText = el?.style.cssText ?? "";
     cssText.value = formatCssText(originCssText);
@@ -45,7 +40,10 @@ watch(
 );
 
 const handleSave = (cssText) => {
-  (props.context.editingEl ?? {}).style.cssText = minimizeCssText(cssText);
+  globalContext.modifyMirrorEl((el) => {
+    el.style.cssText = cssText;
+  });
+  // (globalContext.data.mirrorEl ?? {}).style.cssText = minimizeCssText(cssText);
 };
 </script>
 

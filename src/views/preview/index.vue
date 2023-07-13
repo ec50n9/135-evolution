@@ -1,17 +1,13 @@
 <script setup>
+import { inject, watch } from "vue";
 import EcWindow from "../../components/ec-window/index.vue";
 import HtmlPreview from "./html-preview.vue";
 
-const props = defineProps({
-  context: {
-    type: Object,
-    required: true,
-  },
-});
+const globalContext = inject("global-context");
 </script>
 
 <template>
   <EcWindow title="预览窗口">
-    <HtmlPreview :htmlText="props.context.editingEl?.outerHTML" />
+    <HtmlPreview :htmlText="globalContext.data.mirrorEl?.outerHTML" />
   </EcWindow>
 </template>
