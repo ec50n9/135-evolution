@@ -27,11 +27,20 @@ const globalContext = {
   modifyMirrorEl: (handler) => {
     if (!context.mirrorEl) return;
 
-    if (context.snapshot.length >= context.snapshotMaxLength)
+    if (context.currentSnapshotIndex === context.snapshotMaxLength - 1) {
+      // 删除第一个快照，保持快照数量不变
       context.snapshot.shift();
+      context.currentSnapshotIndex--;
+    } else {
+      // 删除当前快照之后的快照
+      context.snapshot.splice(context.currentSnapshotIndex + 1);
+    }
+
+    handler(context.mirrorEl);
 
     context.snapshot.push(context.mirrorEl.cloneNode(true));
-    handler(context.mirrorEl);
+    context.currentSnapshotIndex++;
+
     // 触发更新
     context.mirrorEl = context.mirrorEl.cloneNode(true);
   },
@@ -41,7 +50,13 @@ const globalContext = {
    */
   syncMirrorEl: () => {
     if (!context.snapshot.length || !context.editingEl) return;
-    context.editingEl.outerHTML = context.mirrorEl.outerHTML;
+    const node = context.mirrorEl.cloneNode(true);
+    node.classList.add("ective");
+    context.editingEl.insertAdjacentElement("afterend", node);
+    context.editingEl.remove();
+    context.editingEl = node;
+    context.snapshot = [];
+    context.currentSnapshotIndex = 0;
   },
 
   /**
@@ -79,6 +94,7 @@ const handleElementClick = (e) => {
   context.editingEl?.classList.remove("ective");
   context.editingEl = target;
   context.mirrorEl = target.cloneNode(true);
+  context.snapshot.push(context.mirrorEl.cloneNode(true));
   context.editingEl?.classList.add("ective");
 };
 
