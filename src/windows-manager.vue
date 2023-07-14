@@ -7,11 +7,31 @@ import Note from "./views/note/index.vue";
 import "./main.scss";
 
 useInit();
+
+const windows = [
+  {
+    id: "preview",
+    component: Preview,
+  },
+  {
+    id: "css-editor",
+    component: CssEditor,
+  },
+  {
+    id: "history",
+    component: History,
+  },
+  {
+    id: "note",
+    component: Note,
+  },
+];
 </script>
 
 <template>
-  <Preview />
-  <CssEditor />
-  <History />
-  <Note />
+  <component
+    v-for="window in windows"
+    :key="window.id"
+    :is="window.component"
+  />
 </template>
