@@ -55,7 +55,7 @@ const globalContext = {
     context.editingEl.insertAdjacentElement("afterend", node);
     context.editingEl.remove();
     context.editingEl = node;
-    context.snapshot = [];
+    context.snapshot = [context.editingEl.cloneNode(true)];
     context.currentSnapshotIndex = 0;
   },
 
@@ -94,7 +94,7 @@ const handleElementClick = (e) => {
   context.editingEl?.classList.remove("ective");
   context.editingEl = target;
   context.mirrorEl = target.cloneNode(true);
-  context.snapshot.push(context.mirrorEl.cloneNode(true));
+  context.snapshot = [context.mirrorEl.cloneNode(true)];
   context.editingEl?.classList.add("ective");
 };
 
