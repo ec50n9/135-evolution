@@ -1,8 +1,9 @@
 import { onBeforeUnmount, onMounted, provide, reactive, triggerRef } from "vue";
-import { addStyle } from "../utils/inject-util.js";
+import { addStyle, getEnv } from "../utils/inject-util.js";
 
 // 上下文
 const context = reactive({
+  env: getEnv(),
   editorEl: null,
   editingEl: null,
   mirrorEl: null,
@@ -132,4 +133,6 @@ export default function () {
       handleElementClick
     );
   });
+
+  return globalContext;
 }
