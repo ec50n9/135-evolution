@@ -4,9 +4,10 @@ import Preview from "./views/preview/index.vue";
 import CssEditor from "./views/css-editor/index.vue";
 import History from "./views/history/index.vue";
 import Note from "./views/note/index.vue";
+import AdFreeService from "./services/ad-free";
 import "./main.scss";
 
-useInit();
+const globalContext = useInit();
 
 const windows = [
   {
@@ -26,6 +27,9 @@ const windows = [
     component: Note,
   },
 ];
+
+const services = [AdFreeService];
+services.forEach((service) => service(globalContext));
 </script>
 
 <template>
