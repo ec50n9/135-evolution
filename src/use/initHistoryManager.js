@@ -1,5 +1,6 @@
-export default function (context) {
-  return {
+export default function (globalContext) {
+  const context = globalContext.data;
+  const history = {
     /**
      * 修改编辑器元素
      * @param {(el: any) => void} handler
@@ -65,4 +66,5 @@ export default function (context) {
         context.snapshot[context.currentSnapshotIndex].cloneNode(true);
     },
   };
+  globalContext.history = history;
 }

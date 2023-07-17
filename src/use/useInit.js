@@ -1,6 +1,5 @@
 import { onBeforeUnmount, onMounted, provide, reactive, triggerRef } from "vue";
 import { addStyle, getEnv } from "../utils/inject-util.js";
-import useHistoryManager from "./useHistoryManager.js";
 
 // 上下文
 const context = reactive({
@@ -17,7 +16,6 @@ const context = reactive({
 // 全局上下文
 const globalContext = {
   data: context,
-  history: useHistoryManager(context),
 };
 
 // 编辑器元素事件
