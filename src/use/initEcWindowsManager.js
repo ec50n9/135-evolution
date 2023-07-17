@@ -21,6 +21,9 @@ const generateId = () => {
  * @returns {object} 窗口.component
  */
 const createWindow = (globalContext, options) => {
+  // 初始化参数
+  options.id = options.id || generateId();
+
   const rect = reactive({
     x: 0,
     y: 0,
@@ -34,8 +37,11 @@ const createWindow = (globalContext, options) => {
         rect.x = x;
         rect.y = y;
       },
-      onMinimize: () => {},
+      onMinimize: () => {
+        console.log("minimize", options.id);
+      },
       onClose: () => {
+        console.log("close", options.id);
         globalContext.windowsManager.closeWindow(options.id);
       },
     },
@@ -45,7 +51,7 @@ const createWindow = (globalContext, options) => {
   );
 
   return {
-    id: options.id || generateId(),
+    id: options.id,
     rect,
     component: markRaw(warpper),
   };
