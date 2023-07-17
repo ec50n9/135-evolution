@@ -52,7 +52,7 @@ const btns = [
     onClick: () => emit("minimize"),
   },
   {
-    color: "#eab308",
+    color: "#f97316",
     onClick: () => emit("close"),
   },
 ];
