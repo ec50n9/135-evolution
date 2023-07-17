@@ -1,5 +1,5 @@
 <script setup>
-import { inject, watch } from "vue";
+import { inject } from "vue";
 import HtmlPreview from "./html-preview.vue";
 
 const globalContext = inject("global-context");

@@ -10,16 +10,34 @@ const generateId = () => {
 
 /**
  * 创建窗口
+ * @param {object} globalContext 上下文
  * @param {object} options
  * @param {string} [options.id]
  * @param {string} [options.title]
  * @param {object} options.component
+ * @returns {object} 窗口
+ * @returns {string} 窗口.id
+ * @returns {object} 窗口.rect
+ * @returns {object} 窗口.component
  */
-const createWindow = (options) => {
+const createWindow = (globalContext, options) => {
+  const rect = reactive({
+    x: 0,
+    y: 0,
+  });
   const warpper = h(
     EcWindow,
     {
       title: options.title,
+      rect,
+      onDrag: ({ x, y }) => {
+        rect.x = x;
+        rect.y = y;
+      },
+      onMinimize: () => {},
+      onClose: () => {
+        globalContext.windowsManager.closeWindow(options.id);
+      },
     },
     {
       default: () => h(options.component),
@@ -28,6 +46,7 @@ const createWindow = (options) => {
 
   return {
     id: options.id || generateId(),
+    rect,
     component: markRaw(warpper),
   };
 };
@@ -43,15 +62,20 @@ export default function (globalContext, initWindows) {
 
   const list = reactive([]);
   initWindows.map((item) => {
-    list.push(createWindow(item));
+    list.push(createWindow(globalContext, item));
   });
 
   const windowsManager = {
     list,
-    createWindow: (options)=>{
-      const window = createWindow(options);
+    createWindow: (options) => {
+      const window = createWindow(globalContext, options);
       list.push(window);
       return window;
+    },
+    closeWindow: (id) => {
+      const index = list.findIndex((item) => item.id === id);
+      if (index === -1) return;
+      list.splice(index, 1);
     },
   };
 

@@ -1,7 +1,6 @@
 <template>
   <div class="ec-window">
     <Header
-      ref="headerEl"
       :title="props.title"
       @drag="handleDrag"
       @minimize="handleMinimize"
@@ -33,31 +32,25 @@ const props = defineProps({
   },
 });
 
-// const emit = defineEmits(["drag", "minimize", "close"]);
+const emit = defineEmits(["drag", "minimize", "close"]);
 
-const headerEl = ref(null);
-const x = ref(0);
-const y = ref(0);
+/**
+ * @param {object} data
+ * @param {number} data.x
+ * @param {number} data.y
+ */
+const handleDrag = (data) => emit("drag", data);
 
-const handleDrag = ({ x: moveX, y: moveY }) => {
-  x.value = moveX;
-  y.value = moveY;
-};
+const handleMinimize = () => emit("minimize");
 
-const handleMinimize = () => {
-  console.log("minimize");
-};
-
-const handleClose = () => {
-  console.log("close");
-};
+const handleClose = () => emit("close");
 </script>
 
 <style lang="scss" scoped>
 .ec-window {
   position: fixed;
-  left: v-bind("x + 'px'");
-  top: v-bind("y + 'px'");
+  left: v-bind("props.rect.x + 'px'");
+  top: v-bind("props.rect.y + 'px'");
   display: flex;
   flex-direction: column;
   width: 22rem;

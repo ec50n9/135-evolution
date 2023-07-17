@@ -6,6 +6,7 @@
         v-for="item in btns"
         class="action-btn"
         :style="{ backgroundColor: item.color }"
+        @click="item.onClick"
       ></div>
     </div>
   </div>
@@ -47,12 +48,12 @@ onMounted(() => {
 
 const btns = [
   {
-    color: "#f59e0b",
-    onClick: emit.minimize,
+    color: "#10b981",
+    onClick: () => emit("minimize"),
   },
   {
-    color: "#ef4444",
-    onClick: emit.close,
+    color: "#eab308",
+    onClick: () => emit("close"),
   },
 ];
 </script>

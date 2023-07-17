@@ -47,12 +47,17 @@ const controlList = [
 const controlListState = reactive({});
 
 const handleToggle = (item) => {
-  globalContext.windowsManager.createWindow({
-    id: item.id,
-    title: item.title,
-    component: item.component,
-  });
-  controlListState[item.id] = !controlListState[item.id];
+  if (controlListState[item.id]) {
+    globalContext.windowsManager.closeWindow(item.id);
+    controlListState[item.id] = false;
+  } else {
+    globalContext.windowsManager.createWindow({
+      id: item.id,
+      title: item.title,
+      component: item.component,
+    });
+    controlListState[item.id] = true;
+  }
 };
 </script>
 
