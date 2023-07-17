@@ -22,10 +22,20 @@ const props = defineProps({
     type: String,
     default: "EC Window",
   },
+  rect: {
+    type: Object,
+    default: () => ({
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+    }),
+  },
 });
 
+// const emit = defineEmits(["drag", "minimize", "close"]);
+
 const headerEl = ref(null);
-const activated = ref(false);
 const x = ref(0);
 const y = ref(0);
 

@@ -1,5 +1,5 @@
-import { reactive } from "vue";
-import { markRaw } from "vue";
+import EcWindow from "../components/ec-window/index.vue";
+import { markRaw, reactive, h } from "vue";
 
 /**
  * 生成随机id
@@ -15,11 +15,22 @@ const generateId = () => {
  * @param {string} [options.title]
  * @param {object} options.component
  */
-const createWindow = (options) => ({
-  id: options.id || generateId(),
-  title: options.title,
-  component: markRaw(options.component),
-});
+const createWindow = (options) => {
+  const warpper = h(
+    EcWindow,
+    {
+      title: options.title,
+    },
+    {
+      default: () => h(options.component),
+    }
+  );
+
+  return {
+    id: options.id || generateId(),
+    component: markRaw(warpper),
+  };
+};
 
 /**
  * 窗口管理器
@@ -34,9 +45,14 @@ export default function (globalContext, initWindows) {
   initWindows.map((item) => {
     list.push(createWindow(item));
   });
+
   const windowsManager = {
     list,
-    createWindow,
+    createWindow: (options)=>{
+      const window = createWindow(options);
+      list.push(window);
+      return window;
+    },
   };
 
   globalContext.windowsManager = windowsManager;

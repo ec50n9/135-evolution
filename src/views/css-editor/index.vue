@@ -43,18 +43,15 @@ const handleSave = (cssText) => {
   globalContext.history.modifyMirrorEl((el) => {
     el.style.cssText = cssText;
   });
-  // (globalContext.data.mirrorEl ?? {}).style.cssText = minimizeCssText(cssText);
 };
 </script>
 
 <template>
-  <EcWindow title="样式编辑">
-    <Editor
-      :cssText="cssText"
-      @update:cssText="(val) => (cssText = val)"
-      @save="handleSave"
-    />
-  </EcWindow>
+  <Editor
+    :cssText="cssText"
+    @update:cssText="(val) => (cssText = val)"
+    @save="handleSave"
+  />
 </template>
 
 <style lang="scss" scoped></style>
