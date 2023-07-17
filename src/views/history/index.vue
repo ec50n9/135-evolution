@@ -5,13 +5,13 @@ import EcWindow from "../../components/ec-window/index.vue";
 const globalContext = inject("global-context");
 
 const handleUndo = () => {
-  globalContext.undo();
+  globalContext.history.undo();
 };
 const handleRedo = () => {
-  globalContext.redo();
+  globalContext.history.redo();
 };
 const handleApply = () => {
-  globalContext.syncMirrorEl();
+  globalContext.history.syncMirrorEl();
 };
 </script>
 

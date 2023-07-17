@@ -40,7 +40,7 @@ watch(
 );
 
 const handleSave = (cssText) => {
-  globalContext.modifyMirrorEl((el) => {
+  globalContext.history.modifyMirrorEl((el) => {
     el.style.cssText = cssText;
   });
   // (globalContext.data.mirrorEl ?? {}).style.cssText = minimizeCssText(cssText);
